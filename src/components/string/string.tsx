@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useEffect } from "react";
+import React, { ChangeEvent, useState, useEffect} from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { ElementStates } from "../../types/element-states";
 import { Input } from "../ui/input/input";
@@ -6,52 +6,72 @@ import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import "../../index.css"
 
+export type TArrayStatus = {
+  letter: string;
+  status: ElementStates;
+}
 export const StringComponent: React.FC = () => {
   const [value, setValue] = useState('')
-  const [sortableArr, setSortableArr] = useState<Record<string, string>[] | null>(null)
-
-  // let reveredArray: Record<string, string>[] = []
+  const [loader, setLoader] = useState(false)
+  const [sortableArr, setSortableArr] = useState<TArrayStatus[] | null>(null)
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value)
   }
   const handleReverse = () => {
-    setSortableArr(value.split('').map(elem => ({letter: elem, status: 'default'})))
+    if(value !== '') {
+      const defaultArray = value.split('').map(elem => ({letter: elem, status: ElementStates.Default}))
+      setSortableArr(defaultArray)
+      setLoader(true)
+
+      setTimeout(() => {
+        reverse(defaultArray)
+      }, 1000);
+    }
   };
-  const reverse = async(arr: Record<string, string>[] | null) => {
-    if( arr === null) {
-      return
-    }
-    // let start = 0
-    // let end = arr.length-1
-    // while(start <= end) {
-    //   await new Promise(resolve => setTimeout(resolve, 1000)).then(() => console.log(start));
 
-    //   [arr[start], arr[end]] = [arr[end], arr[start]]
-    //   start++
-    //   end--
-    // }
-    console.log(arr)
+  const reverse = (arr: TArrayStatus[], start = 0, end = arr.length - 1) => {
+    const newArr = [...arr];
+
+    if (start <= end) {
+      newArr[start].status = ElementStates.Changing;
+      newArr[end].status = ElementStates.Changing;
+      setSortableArr(newArr);
+  
+      setTimeout(() => {
+        newArr[start].status = ElementStates.Modified;
+        newArr[end].status = ElementStates.Modified;
+        [newArr[start], newArr[end]] = [newArr[end], newArr[start]];
+        reverse(newArr, start + 1, end - 1);
+      }, 1000);
+    } else {
+      setLoader(false)
+    }
+    setSortableArr(newArr)
   }
-
-
   useEffect(() => {
-    if (sortableArr !== null) {
-      reverse(sortableArr);
+    const handleKeyPressEnter = (event:KeyboardEvent) => {
+      if(event.key === 'Enter') {
+        handleReverse()
+      }
     }
-  }, [sortableArr]);
+    document.addEventListener('keydown', handleKeyPressEnter)
+    return () => {
+      document.removeEventListener('keydown', handleKeyPressEnter)
+    }
+  },[handleReverse])
 
   return (
     <SolutionLayout title="Строка">
       <div className="box-container">
         <div className="input-box">
             <Input placeholder="Введите текст" isLimitText={true} maxLength={11} value={value} onChange={onChange}></Input>
-            <Button text='Развернуть' onClick={handleReverse}> </Button>
+            <Button text='Развернуть' onClick={handleReverse} isLoader={loader} /*disabled={loader}*/> </Button>
         </div>
         <ul className="list-box">
           {sortableArr !== null
             ? sortableArr.map((elem, index) => {
-                return <li className="list-box_circle" key={index}><Circle letter={elem.letter}></Circle></li>;
+                return <li className="list-box_circle" key={index}><Circle letter={elem.letter} state={elem.status}></Circle></li>;
               })
             : null}
         </ul>
