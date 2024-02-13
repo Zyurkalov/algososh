@@ -29,7 +29,6 @@ export const StringComponent: React.FC = () => {
       }, 1000);
     }
   };
-
   const reverse = (arr: TArrayStatus[], start = 0, end = arr.length - 1) => {
     const newArr = [...arr];
 
@@ -51,8 +50,8 @@ export const StringComponent: React.FC = () => {
   }
   useEffect(() => {
     const handleKeyPressEnter = (event:KeyboardEvent) => {
-      if(event.key === 'Enter') {
-        handleReverse()
+      if(event.key === 'Enter' && !loader) {
+          handleReverse()
       }
     }
     document.addEventListener('keydown', handleKeyPressEnter)
@@ -79,9 +78,3 @@ export const StringComponent: React.FC = () => {
     </SolutionLayout>
   );
 };
-
-// export enum ElementStates {
-//   Default = "default",
-//   Changing = "changing",
-//   Modified = "modified",
-// }
