@@ -28,12 +28,15 @@ code {
   gap: 12px;
 }
 .list-box {
+  max-width: 944px;
   margin: 0 auto;
   padding: 0;
   list-style-type: none;
+
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
 }
 .list-box_circle {
-  
+  margin-top: 48px;
 }

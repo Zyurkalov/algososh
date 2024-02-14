@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useState, useEffect} from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { ElementStates } from "../../types/element-states";
+import { useCustomEffect } from "../utility/use-custom-effect";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
@@ -48,17 +49,7 @@ export const StringComponent: React.FC = () => {
     }
     setSortableArr(newArr)
   }
-  useEffect(() => {
-    const handleKeyPressEnter = (event:KeyboardEvent) => {
-      if(event.key === 'Enter' && !loader) {
-          handleReverse()
-      }
-    }
-    document.addEventListener('keydown', handleKeyPressEnter)
-    return () => {
-      document.removeEventListener('keydown', handleKeyPressEnter)
-    }
-  },[handleReverse])
+  useCustomEffect(handleReverse, loader)
 
   return (
     <SolutionLayout title="Строка">
