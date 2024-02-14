@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useState} from "react";
-import { getFibonacci } from "../utility/get-fibonacci";
+import { getFibonacci } from "../../utility/get-fibonacci";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
@@ -7,7 +7,7 @@ import { Circle } from "../ui/circle/circle";
 import { ElementStates } from "../../types/element-states";
 import "../../index.css"
 import styles from "./fibonacci-page.module.css";
-import { useCustomEffect } from "../utility/use-custom-effect";
+import { useCustomEffect } from "../../utility/use-custom-effect";
 
 
 export const FibonacciPage: React.FC = () => {

@@ -1,0 +1,8 @@
+.input-box__radio {
+    align-items: center;
+}
+.list-box__column {
+    align-items: flex-end;
+    max-width: none;
+    min-height: 390px;
+}

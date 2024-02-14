@@ -1,13 +1,13 @@
 import React, { ChangeEvent, useState, useEffect} from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { ElementStates } from "../../types/element-states";
-import { useCustomEffect } from "../utility/use-custom-effect";
+import { useCustomEffect } from "../../utility/use-custom-effect";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import "../../index.css"
 
-export type TArrayStatus = {
+type TArrayStatus = {
   letter: string;
   status: ElementStates;
 }
