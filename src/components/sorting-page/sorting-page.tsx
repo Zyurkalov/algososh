@@ -6,9 +6,12 @@ import { Column } from "../ui/column/column";
 import { RadioInput } from "../ui/radio-input/radio-input";
 import { Direction } from "../../types/direction"
 import { ElementStates } from "../../types/element-states";
+import { getSelectionSort } from "../../utility/get-selection-sort";
+import { getBubbleSort } from "../../utility/get-bubble-sort";
 import style from "./sorting-page.module.css"
 
-type TColumnArray = {
+export type TTypeSort = "up" | "down"
+export type TColumnArray = {
   value: number;
   state: ElementStates;
 }
@@ -25,6 +28,16 @@ export const SortingPage: React.FC = () => {
     setChoiсeMetod(!choiсeMetod)
     setBubbleMetod(!bubbleMetod)
   }
+  const handleSelectionSort = (typeSort: TTypeSort ) => {
+    if(randomArray !== null) {
+      if(bubbleMetod) {
+        setRandomArray(getBubbleSort(randomArray, typeSort))
+      }
+      if(choiсeMetod) {
+        setRandomArray(getSelectionSort(randomArray, typeSort))
+      }   
+    }
+  }
 
   return (
     <SolutionLayout title="Сортировка массива">
@@ -32,8 +45,8 @@ export const SortingPage: React.FC = () => {
         <div className={`input-box ${style["input-box__radio"]}`}> 
           <RadioInput label={"Выбор"} checked={choiсeMetod} onClick={() => handleRadioClick()} extraClass={"mr-15"}></RadioInput>
           <RadioInput label={"Пузырёк"} checked={bubbleMetod} onClick={() => handleRadioClick()} extraClass={"mr-20"}></RadioInput>
-          <Button text='По возврастанию' onClick={handleClick} isLoader={loader} disabled={false} sorting={Direction.Ascending}> </Button> 
-          <Button text='По убыванию' onClick={handleClick} isLoader={loader} disabled={false} sorting={Direction.Ascending}> </Button>   
+          <Button text='По возврастанию' onClick={() =>handleSelectionSort("up")} isLoader={loader} disabled={false} sorting={Direction.Ascending}> </Button> 
+          <Button text='По убыванию' onClick={() =>handleSelectionSort("down")} isLoader={loader} disabled={false} sorting={Direction.Ascending}> </Button>   
           <Button text='Новый массив' onClick={() => setRandomArray(getRandomArr())} isLoader={loader} disabled={false} extraClass={"ml-35"}> </Button>
         </div>
         <ul className={`list-box ${style["list-box__column"]}`}>

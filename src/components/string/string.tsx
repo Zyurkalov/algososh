@@ -46,8 +46,8 @@ export const StringComponent: React.FC = () => {
       }, 1000);
     } else {
       setLoader(false)
+      setSortableArr(newArr)
     }
-    setSortableArr(newArr)
   }
   useCustomEffect(handleReverse, loader)
 
