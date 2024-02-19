@@ -49,11 +49,9 @@ import { ElementStates } from "../types/element-states";
     let metod = typeSort;
   
     if (start === arr.length - 1) {
-      // arr[start].state = ElementStates.Modified;
       return arr;
     }
     const maxValueIndex = getMaxValueIndex(arr, start, start, metod);
-    // arr[maxValueIndex].state = ElementStates.Modified;
 
     [arr[start], arr[maxValueIndex]] = [arr[maxValueIndex], arr[start]];
     return getSelectionSort(arr, metod, start + 1);

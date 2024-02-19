@@ -25,7 +25,6 @@ export const getBubbleSort = (sortingArr: TColumnArray[],method: TTypeSort) => {
 };
 
 const bubbleSort = (arr: TColumnArray[], method: TTypeSort, start: number): TColumnArray[] => {
-  // arr[start].state = ElementStates.Modified;
     if (start === arr.length - 1) {
       return arr;
     }
@@ -34,7 +33,6 @@ const bubbleSort = (arr: TColumnArray[], method: TTypeSort, start: number): TCol
   };
 
 const innerBubbleSort = (arr: TColumnArray[], method: TTypeSort, next: number) => {
-    // arr[next].state = ElementStates.Modified;
     if (next === arr.length - 1) {
       return;
     }
