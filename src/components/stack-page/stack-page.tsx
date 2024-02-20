@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useMemo, useEffect } from "react";
+import React, { ChangeEvent, useState, useMemo } from "react";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
@@ -65,7 +65,9 @@ export const StackPage: React.FC = () => {
         <ul className="list-box">
           {getContainer() !== null
               ? getContainer().map((elem, index) => {
-                  return <li className="list-box_circle" key={index}><Circle letter={elem.value} index={index} head={showTop(index)} state={elem.state}></Circle></li>;
+                  return <li className="list-box_circle" key={index}>
+                    <Circle letter={elem.value} index={index} head={showTop(index)} state={elem.state}></Circle>
+                  </li>;
                 })
               : null
           }
