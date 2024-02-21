@@ -1,8 +1,8 @@
 type TQueue<T> = {
   enqueue: (item: T) => void;
   dequeue: () => void;
-  peak: () => void;
-  low: () => void;
+  isHeader: () => void;
+  isTail: () => void;
   remove: () => null;
   isEmpty: () => boolean;
   getContainer: () => T | null
@@ -36,17 +36,17 @@ export class Queue<T> {
     this.head = (this.head + 1) % this.size;
     this.length--;
   };
-  peak = (): T | null => {
+  isHeader = (): T | null => {
     if (this.isEmpty()) {
       throw new Error("Очередь пуста");
     }
     return this.container[this.head];
   };
-  low = (): T | null => {
+  isTail = (): T | null => {
     if (this.isEmpty()) {
         throw new Error("Очередь пуста");
       }
-    return this.container[this.tail-1]; 
+    return this.container[(this.tail + this.size - 1) % this.size]; 
   }
   remove = () => { 
     this.head = 0;

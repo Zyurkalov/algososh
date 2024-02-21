@@ -7,6 +7,7 @@ import { Queue } from "./class-queue";
 import { ElementStates } from "../../types/element-states";
 import style from "./queue-page.module.css"
 import "../../index.css"
+import { loadavg } from "os";
 
 export const QueuePage: React.FC = () => {
   type TStackElem = {
@@ -15,10 +16,12 @@ export const QueuePage: React.FC = () => {
   }
 
   const newQueue = useMemo(() => new Queue<TStackElem >(7), []);
-  const {enqueue, dequeue, peak, low,  isEmpty, getContainer, remove, interrupt} = newQueue
+  const {enqueue, dequeue, isHeader, isTail, isEmpty, getContainer, remove, interrupt} = newQueue
 
   const [input, setInput] = useState('');
   const [update, setUpdate] = useState(false);
+  const [enqueueLoader, setEnqueueLoader] = useState(false);
+  const [dequeueLoader, setDequeueLoader] = useState(false);
   const timeout = 500;
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -27,40 +30,47 @@ export const QueuePage: React.FC = () => {
   const onPush =  (value: string) => {
     enqueue({value: value, state: ElementStates.Changing})
     setInput('')
+    setEnqueueLoader(true)
 
     setTimeout(() => {
-      console.log(`${value} - ${low()?.value}`)
-      if (low() !== undefined) {
-        low()!.state = ElementStates.Default
+      if (isTail() !== undefined) {
+        isTail()!.state = ElementStates.Default
       }
-      setUpdate(!update)
+      // setUpdate(!update)
+      setEnqueueLoader(false)
     }, timeout);
   }
 
   const onPop = () => {
-    if (peak() !== undefined) {
-      peak()!.state = ElementStates.Changing
+    if (isHeader() !== undefined) {
+      isHeader()!.state = ElementStates.Changing
     }
-    setUpdate(!update)
+    // setUpdate(!update)
+    setDequeueLoader(true)
 
     setTimeout(() => {
-      const upd = !update
-      dequeue()
-      setUpdate(!upd)
+      // const upd = !update
+      // setUpdate(!upd)
+      if(isHeader() === isTail()) {
+        remove()
+      } else {
+        dequeue()
+      }
+      setDequeueLoader(false)
     }, timeout);
   }
 
   const showHead = (index: number) => {
     if(getContainer()[index]?.value) {
-      if(getContainer()[index] === peak()) {
+      if(getContainer()[index] === isHeader()) {
         return "head"
       }
       return null
     }
   }
   const showTail = (index: number) => {
-    if(getContainer()[index]?.value) {    
-      if(getContainer()[index] === low()) {
+    if(getContainer()[index]?.value) { 
+      if(getContainer()[index] === isTail()) {
         return "tail"
       }
       return null
@@ -72,8 +82,8 @@ export const QueuePage: React.FC = () => {
        <div className="box-container">
         <div className={`input-box ${style["input-box__stackPage"]}`}>
           <Input placeholder="Введите значение" isLimitText={true} maxLength={4} type={'text'} onChange={onChange} value={input}></Input>
-          <Button text='Добавить' onClick={() => onPush(input)} disabled={!input || interrupt()}></Button>
-          <Button text='Удалить' onClick={() => onPop()} disabled={isEmpty()}></Button>
+          <Button text='Добавить' onClick={() => onPush(input)} disabled={!input || interrupt()} isLoader={enqueueLoader}></Button>
+          <Button text='Удалить' onClick={() => onPop()} disabled={isEmpty()} isLoader={dequeueLoader}></Button>
           <Button text='Очистить' onClick={() => {remove(); setUpdate(!update)}} extraClass={"ml-40"} disabled={isEmpty()}></Button>
         </div>
         <ul className="list-box">
@@ -83,8 +93,6 @@ export const QueuePage: React.FC = () => {
             <Circle letter={getContainer()[index]?.value} index={index} state={getContainer()[index]?.state} head={showHead(index)} tail={showTail(index)}/>
           </li>
         ))}
-              
-          
         </ul>
       </div>
     </SolutionLayout>
