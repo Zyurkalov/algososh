@@ -39,4 +39,8 @@ code {
 }
 .list-box_circle {
   margin-top: 48px;
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
 }

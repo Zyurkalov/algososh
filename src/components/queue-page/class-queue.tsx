@@ -3,12 +3,12 @@ type TQueue<T> = {
   dequeue: () => void;
   isHeader: () => void;
   isTail: () => void;
-  remove: () => null;
+  remove: () => void;
   isEmpty: () => boolean;
-  getContainer: () => T | null
+  getContainer: () => (T | null)[]
 };
 
-export class Queue<T> {
+export class Queue<T> implements TQueue<T>{
   private container: (T | null)[] = [];
   private head = 0;
   private tail = 0;
