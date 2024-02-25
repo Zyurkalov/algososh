@@ -1,4 +1,3 @@
-
 export class Node<T> {
   value: T;
   next: Node<T> | null;
@@ -10,15 +9,16 @@ export class Node<T> {
     this.prev = next === undefined ? null : next;
   }
 }
-type THeadOrTail = "head" | "tail";
+export type THeadOrTail = number | "head" | "tail";
 type TLinkedList<T> = {
-  append: (element: T, targetIndex: number | THeadOrTail) => void;
+  append: (element: T, targetIndex: THeadOrTail) => void;
   returnIt: (targetIndex: number) => T | undefined;
   deleteIt: (targetIndex: number) => void;
   deleteAll: () => void;
   getSize: () => number;
+  displayList: () => T[];
 };
-class LinkedList<T> implements TLinkedList<T> {
+export class LinkedList<T> implements TLinkedList<T> {
   private head: Node<T> | null;
   private tail: Node<T> | null;
   private size: number;
@@ -27,7 +27,7 @@ class LinkedList<T> implements TLinkedList<T> {
     this.tail = null;
     this.size = 0;
   }
-  append(element: T, targetIndex: number | THeadOrTail = 0) {
+  append(element: T, targetIndex: THeadOrTail = 0) {
     const node = new Node(element);
     let current;
     let index = 0;
@@ -52,7 +52,7 @@ class LinkedList<T> implements TLinkedList<T> {
       this.size++;
       return;
     }
-    if (targetIndex === "tail") {
+    if (targetIndex === "tail" || targetIndex > this.getSize()) {
       current = this.tail;
       this.tail = node;
       this.tail.prev = current;
@@ -60,6 +60,14 @@ class LinkedList<T> implements TLinkedList<T> {
       this.size++;
       return;
     }
+    // if (targetIndex > this.getSize()) {
+    //   current = this.tail;
+    //   this.tail = node;
+    //   this.tail.prev = current;
+    //   current.next = this.tail;
+    //   this.size++;
+    //   return;
+    // }
     current = this.head;
     while (current.next && index < targetIndex) {
       index++;
@@ -67,13 +75,20 @@ class LinkedList<T> implements TLinkedList<T> {
     }
     node.prev = current.prev;
     node.next = current;
+    current.prev!.next = node;
     current.prev = node;
     this.size++;
   }
   deleteIt(targetIndex: number) {
     let index = 0;
-    let current = this.head;
+    let current: Node<T> | null = this.head;
 
+    if( this.head === this.tail || this.tail === null) {
+        this.head = null
+        this.tail = null
+        this.size = 0
+        return
+    }
     if (targetIndex === 0 && current !== null) {
       this.head = current.next;
 
@@ -84,7 +99,7 @@ class LinkedList<T> implements TLinkedList<T> {
       this.size--;
       return;
     }
-    while (current !== null && index < targetIndex) {
+    while (current !== null && current.next !== null && index < targetIndex) {
       current = current.next;
       index++;
     }
@@ -94,6 +109,12 @@ class LinkedList<T> implements TLinkedList<T> {
       }
       if (current.prev !== null) {
         current.prev.next = current.next;
+      }
+      if (current.next === null) {
+        if (current.prev !== null) {
+          current.prev.next = null;
+          this.tail = current.prev;
+        }
       }
       current = null;
       this.size--;
@@ -139,5 +160,18 @@ class LinkedList<T> implements TLinkedList<T> {
   }
   getSize() {
     return this.size;
+  }
+  displayList(): T[] {
+    if (this.head === null) {
+      return [];
+    }
+    let current: Node<T> | null = this.head;
+    let result = [];
+
+    while (current !== null) {
+      result.push(current.value);
+      current = current.next;
+    }
+    return result;
   }
 }

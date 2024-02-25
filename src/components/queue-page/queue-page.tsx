@@ -7,7 +7,6 @@ import { Queue } from "./class-queue";
 import { ElementStates } from "../../types/element-states";
 import style from "./queue-page.module.css"
 import "../../index.css"
-import { loadavg } from "os";
 
 export const QueuePage: React.FC = () => {
   type TStackElem = {

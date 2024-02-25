@@ -7,3 +7,11 @@
 .input__size {
     width: 204px;
 }
+.boxContainer__hight {
+    min-height: 350px;
+}
+.boxContainer_inputBox {
+    display: flex;
+    flex-direction: column;
+    gap:8px;
+}
