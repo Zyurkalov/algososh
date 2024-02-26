@@ -1,8 +1,21 @@
 .input-box__radio {
-    align-items: center;
+  align-items: center;
 }
 .list-box__column {
-    align-items: flex-end;
-    max-width: none;
-    min-height: 390px;
+  align-items: flex-end;
+  max-width: none;
+  min-height: 390px;
+}
+.bottonContainer {
+  min-width: 403px;
+  display: flex;
+}
+.bottonContainer:only-child {
+    min-width: 100%
+}
+.bottonContainer__ascending {
+    min-width: 205px;
+}
+.bottonContainer__descending {
+    min-width: 186px;
 }

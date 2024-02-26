@@ -8,6 +8,7 @@ import { Direction } from "../../types/direction"
 import { ElementStates } from "../../types/element-states";
 import { getSelectionSort } from "../../utility/get-selection-sort";
 import { getBubbleSort } from "../../utility/get-bubble-sort";
+import { resetStates } from "../../utility/reset-states";
 import style from "./sorting-page.module.css"
 
 export type TTypeSort = "up" | "down"
@@ -15,38 +16,53 @@ export type TColumnArray = {
   value: number;
   state: ElementStates;
 }
-
 export const SortingPage: React.FC = () => {
-  const [loader, setLoader] = useState(false)
   const [choiсeMetod, setChoiсeMetod] = useState(true)
   const [bubbleMetod, setBubbleMetod] = useState(false)
+  const [ascendingMetod, setAscendingMetod] = useState(false)
+  const [descendingMetod, setDescendingMetod] = useState(false)
   const [randomArray, setRandomArray] = useState<TColumnArray[]>([])
 
   const handleRadioClick =() => {
     setChoiсeMetod(!choiсeMetod)
     setBubbleMetod(!bubbleMetod)
   }
-  const handleSelectionSort = (typeSort: TTypeSort ) => {
+  const handleSelectionSort = async (typeSort: TTypeSort ) => {
+    if(typeSort === "up") {
+      setAscendingMetod(true)
+    } else {
+      setDescendingMetod(true)
+    }
+    
     if(randomArray.length > 0) {
+      
       if(bubbleMetod) {
-        setRandomArray(getBubbleSort(randomArray, typeSort))
+        // setRandomArray(await getBubbleSort(resetStates(randomArray), typeSort, setRandomArray))
+        await getBubbleSort(resetStates(randomArray), typeSort, setRandomArray)   
       }
       if(choiсeMetod) {
-        setRandomArray(getSelectionSort(randomArray, typeSort))
-      }   
+        // setRandomArray(await getSelectionSort(resetStates(randomArray), typeSort, setRandomArray))
+        await getSelectionSort(resetStates(randomArray), typeSort, setRandomArray)      
+      } 
     }else{
       return
-    }
+    } 
+    setDescendingMetod(false)
+    setAscendingMetod(false)
   }
   return (
     <SolutionLayout title="Сортировка массива">
       <div className="box-container">
         <div className={`input-box ${style["input-box__radio"]}`}> 
-          <RadioInput label={"Выбор"} checked={choiсeMetod} onChange={() => handleRadioClick()} extraClass={"mr-15"}></RadioInput>
-          <RadioInput label={"Пузырёк"} checked={bubbleMetod} onChange={() => handleRadioClick()} extraClass={"mr-20"}></RadioInput>
-          <Button text='По возврастанию' onClick={() =>handleSelectionSort("up")} isLoader={loader} disabled={false} sorting={Direction.Ascending}> </Button> 
-          <Button text='По убыванию' onClick={() =>handleSelectionSort("down")} isLoader={loader} disabled={false} sorting={Direction.Ascending}> </Button>   
-          <Button text='Новый массив' onClick={() => setRandomArray(getRandomArr())} isLoader={loader} disabled={false} extraClass={"ml-35"}> </Button>
+          <RadioInput label={"Выбор"} checked={choiсeMetod} onChange={() => handleRadioClick()} extraClass={"mr-15"} disabled={descendingMetod || ascendingMetod}></RadioInput>
+          <RadioInput label={"Пузырёк"} checked={bubbleMetod} onChange={() => handleRadioClick()} extraClass={"mr-20"} disabled={descendingMetod || ascendingMetod}></RadioInput>
+          <div className={`${style.bottonContainer}`}>
+          <Button text='По возрастанию' onClick={() =>handleSelectionSort("up")} isLoader={ascendingMetod} disabled={descendingMetod} 
+          sorting={Direction.Ascending} extraClass={`mr-4 ${style.bottonContainer__ascending}`}> </Button> 
+          <Button text='По убыванию' onClick={() =>handleSelectionSort("down")} isLoader={descendingMetod} disabled={ascendingMetod} 
+          sorting={Direction.Descending} extraClass={`mr-4 ${style.bottonContainer__descending}`}> </Button>   
+          </div>
+          <Button text='Новый массив' onClick={() => setRandomArray(getRandomArr())} disabled={descendingMetod || ascendingMetod} extraClass={"ml-35"}> </Button>
         </div>
         <ul className={`list-box ${style["list-box__column"]}`}>
           {randomArray !== null &&
