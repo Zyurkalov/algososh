@@ -28,6 +28,7 @@ import { ElementStates } from "../types/element-states";
 //   };
 
   export const getMaxValueIndex = (arr: TColumnArray[], start: number, maxValueIndex: number, metod: TTypeSort):number => {
+    
     if(start === arr.length-1) {
       return maxValueIndex
     }

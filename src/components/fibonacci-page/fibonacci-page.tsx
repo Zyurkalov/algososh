@@ -28,6 +28,11 @@ export const FibonacciPage: React.FC = () => {
   async function visualizer(value: number) {
     const fibList = await getFibonacci(value);
     let i = 0;
+
+    if(fibList.length === 1) {
+      setLoader(false)
+      return
+    }
     const interval = setInterval(() => {
       if (i <= fibList.length - 1 && i <20) {
         setFibonacci(prevState => [...prevState, fibList[i]]);
@@ -44,7 +49,7 @@ export const FibonacciPage: React.FC = () => {
     <SolutionLayout title="Последовательность Фибоначчи">
       <div className={`box-container ${styles["box-container__fibonacci"]}`}>
         <div className="input-box">
-            <Input placeholder="Введите число" isLimitText={true} max={19} onChange={onChange} type={'number'}></Input>
+            <Input placeholder="Введите число" isLimitText={true} max={19} onChange={onChange} type={'number'} disabled={loader}></Input>
             <Button text='Рассчитать' onClick={handleClick} isLoader={loader} disabled={value <= 0 || value > 19}> </Button>
         </div>
         <ul className="list-box">

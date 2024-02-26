@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 
-export const useCustomEffect =(customFunction: () => void, status :boolean) => {
+export const useCustomEffect =(customFunction: () => void, status: boolean, key: string = "Enter") => {
     useEffect(() => {
         const handleKeyPressEnter = (event:KeyboardEvent) => {
-          if(event.key === 'Enter' && !status) {
+          if(event.key === key && !status) {
             customFunction()
           }
         }

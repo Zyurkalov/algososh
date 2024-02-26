@@ -55,7 +55,7 @@ export const StringComponent: React.FC = () => {
     <SolutionLayout title="Строка">
       <div className="box-container">
         <div className="input-box">
-            <Input placeholder="Введите текст" isLimitText={true} maxLength={11} value={value} onChange={onChange}></Input>
+            <Input placeholder="Введите текст" isLimitText={true} maxLength={11} value={value} onChange={onChange} disabled={loader}></Input>
             <Button text='Развернуть' onClick={handleReverse} isLoader={loader} /*disabled={loader}*/> </Button>
         </div>
         <ul className="list-box">

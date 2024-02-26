@@ -3,6 +3,7 @@ import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
+import { useCustomEffect } from "../../utility/use-custom-effect";
 import { Stack } from "./class-stack";
 import { ElementStates } from "../../types/element-states";
 import style from "./stack-page.module.css"
@@ -17,33 +18,51 @@ export const StackPage: React.FC = () => {
   const {push, pop, peak, remove, getSize, getContainer} = newStack
 
   const [input, setInput] = useState('');
+  const [adding, setAdding] = useState(false)
+  const [deletion, setDeletion] = useState(false)
   const [update, setUpdate] = useState(false);
   const timeout = 500;
   
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
   };
-  const onPush =  (value: string) => {
-    push({value: value, state: ElementStates.Changing})
-    setInput('')
-
+  const onPush =  () => {
+    if(input === '') {
+      return
+    }
+    push({value: input, state: ElementStates.Changing})
+    setAdding(true)
+    
     setTimeout(() => {
       if (peak() !== null) {
         peak()!.state = ElementStates.Default
       }
-      setUpdate(!update)
+      setInput('')
+      setAdding(false)
     }, timeout);
   }
   const onPop = () => {
+    if(getContainer().length <= 0) {
+      return
+    }
+    
     if (peak() !== null) {
       peak()!.state = ElementStates.Changing
     }
-    setUpdate(!update)
+    setDeletion(true)
 
     setTimeout(() => {
-      const upd = !update
+      // const upd = !update
       pop()
-      setUpdate(!upd)
+      setDeletion(false)
+    }, timeout);
+  }
+  const onRemove = () => {
+    setUpdate(true)
+
+    setTimeout(() => {
+      remove()
+      setUpdate(false)
     }, timeout);
   }
 
@@ -52,15 +71,16 @@ export const StackPage: React.FC = () => {
       return 'top'
     }
   }
-
+  useCustomEffect(onPush, adding)
+  
   return (
     <SolutionLayout title="Стек">
       <div className="box-container">
         <div className={`input-box ${style["input-box__stackPage"]}`}>
-          <Input placeholder="Введите значение" isLimitText={true} maxLength={4} type={'text'} onChange={onChange} value={input}></Input>
-          <Button text='Добавить' onClick={() => onPush(input)} disabled={!input}></Button>
-          <Button text='Удалить' onClick={() => onPop()} disabled={getSize() <= 0}></Button>
-          <Button text='Очистить' onClick={() => {remove(); setUpdate(!update)}} extraClass={"ml-40"} disabled={getSize() <= 0}></Button>
+          <Input placeholder="Введите значение" isLimitText={true} maxLength={4} type={'text'} onChange={onChange} value={input} disabled={adding || deletion || update}></Input>
+          <Button text='Добавить' onClick={() => onPush()} disabled={!input || deletion || update} isLoader={adding}></Button>
+          <Button text='Удалить' onClick={() => onPop()} disabled={getSize() <= 0 || adding || update} isLoader={deletion}></Button>
+          <Button text='Очистить' onClick={() => onRemove()} extraClass={"ml-40"} disabled={getSize() <= 0 || adding || deletion} isLoader={update}></Button>
         </div>
         <ul className="list-box">
           {getContainer() !== null

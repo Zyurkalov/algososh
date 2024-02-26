@@ -3,6 +3,7 @@ import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
+import { useCustomEffect } from "../../utility/use-custom-effect";
 import { Queue } from "./class-queue";
 import { ElementStates } from "../../types/element-states";
 import style from "./queue-page.module.css"
@@ -26,17 +27,19 @@ export const QueuePage: React.FC = () => {
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
   };
-  const onPush =  (value: string) => {
-    enqueue({value: value, state: ElementStates.Changing})
-    setInput('')
+  const onPush =  () => {
+    if(input === '') {
+      return
+    }
+    enqueue({value: input, state: ElementStates.Changing})
     setEnqueueLoader(true)
 
     setTimeout(() => {
       if (isTail() !== undefined) {
         isTail()!.state = ElementStates.Default
       }
-      // setUpdate(!update)
       setEnqueueLoader(false)
+      setInput('')
     }, timeout);
   }
 
@@ -44,18 +47,23 @@ export const QueuePage: React.FC = () => {
     if (isHeader() !== undefined) {
       isHeader()!.state = ElementStates.Changing
     }
-    // setUpdate(!update)
     setDequeueLoader(true)
 
     setTimeout(() => {
-      // const upd = !update
-      // setUpdate(!upd)
       if(isHeader() === isTail()) {
         remove()
       } else {
         dequeue()
       }
       setDequeueLoader(false)
+    }, timeout);
+  }
+  const onRemoveAll = () => {
+    setUpdate(true)
+
+    setTimeout(() => {
+      remove()
+      setUpdate(false)
     }, timeout);
   }
 
@@ -75,15 +83,16 @@ export const QueuePage: React.FC = () => {
       return null
     }
   }
+  useCustomEffect(onPush, enqueueLoader)
 
   return (
     <SolutionLayout title="Очередь">
        <div className="box-container">
         <div className={`input-box ${style["input-box__stackPage"]}`}>
-          <Input placeholder="Введите значение" isLimitText={true} maxLength={4} type={'text'} onChange={onChange} value={input}></Input>
-          <Button text='Добавить' onClick={() => onPush(input)} disabled={!input || interrupt()} isLoader={enqueueLoader}></Button>
-          <Button text='Удалить' onClick={() => onPop()} disabled={isEmpty()} isLoader={dequeueLoader}></Button>
-          <Button text='Очистить' onClick={() => {remove(); setUpdate(!update)}} extraClass={"ml-40"} disabled={isEmpty()}></Button>
+          <Input placeholder="Введите значение" isLimitText={true} maxLength={4} type={'text'} onChange={onChange} value={input} disabled={dequeueLoader || enqueueLoader || update}></Input>
+          <Button text='Добавить' onClick={() => onPush()} disabled={!input || interrupt() || dequeueLoader || update} isLoader={enqueueLoader}></Button>
+          <Button text='Удалить' onClick={() => onPop()} disabled={isEmpty() || enqueueLoader || update} isLoader={dequeueLoader}></Button>
+          <Button text='Очистить' onClick={() => onRemoveAll()} extraClass={"ml-40"} disabled={isEmpty() || dequeueLoader || enqueueLoader} isLoader={update}></Button>
         </div>
         <ul className="list-box">
         

@@ -18,7 +18,7 @@ import { ElementStates } from "../types/element-states";
 //   return arr
 // };
 
-export const getBubbleSort = (sortingArr: TColumnArray[],method: TTypeSort) => {
+export const getBubbleSort = (sortingArr: TColumnArray[], method: TTypeSort) => {
   //чтобы не созадавать новый массив на каждом вызове bubbleSort
   let arr = [...sortingArr];
   return bubbleSort(arr, method, 0);

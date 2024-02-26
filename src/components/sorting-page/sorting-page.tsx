@@ -22,29 +22,28 @@ export const SortingPage: React.FC = () => {
   const [bubbleMetod, setBubbleMetod] = useState(false)
   const [randomArray, setRandomArray] = useState<TColumnArray[]>([])
 
-  const handleClick =() => {}
-
   const handleRadioClick =() => {
     setChoiсeMetod(!choiсeMetod)
     setBubbleMetod(!bubbleMetod)
   }
   const handleSelectionSort = (typeSort: TTypeSort ) => {
-    if(randomArray !== null) {
+    if(randomArray.length > 0) {
       if(bubbleMetod) {
         setRandomArray(getBubbleSort(randomArray, typeSort))
       }
       if(choiсeMetod) {
         setRandomArray(getSelectionSort(randomArray, typeSort))
       }   
+    }else{
+      return
     }
   }
-
   return (
     <SolutionLayout title="Сортировка массива">
       <div className="box-container">
         <div className={`input-box ${style["input-box__radio"]}`}> 
-          <RadioInput label={"Выбор"} checked={choiсeMetod} onClick={() => handleRadioClick()} extraClass={"mr-15"}></RadioInput>
-          <RadioInput label={"Пузырёк"} checked={bubbleMetod} onClick={() => handleRadioClick()} extraClass={"mr-20"}></RadioInput>
+          <RadioInput label={"Выбор"} checked={choiсeMetod} onChange={() => handleRadioClick()} extraClass={"mr-15"}></RadioInput>
+          <RadioInput label={"Пузырёк"} checked={bubbleMetod} onChange={() => handleRadioClick()} extraClass={"mr-20"}></RadioInput>
           <Button text='По возврастанию' onClick={() =>handleSelectionSort("up")} isLoader={loader} disabled={false} sorting={Direction.Ascending}> </Button> 
           <Button text='По убыванию' onClick={() =>handleSelectionSort("down")} isLoader={loader} disabled={false} sorting={Direction.Ascending}> </Button>   
           <Button text='Новый массив' onClick={() => setRandomArray(getRandomArr())} isLoader={loader} disabled={false} extraClass={"ml-35"}> </Button>
