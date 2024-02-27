@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { TColumnArray } from "../components/sorting-page/sorting-page";
 import { TTypeSort } from "../components/sorting-page/sorting-page";
+import { SHORT_DELAY_IN_MS } from "../constants/delays";
 import { ElementStates } from "../types/element-states";
 
 // export const getSelectionSorted = (sortingArr: TColumnArray[], typeSort: TTypeSort) => {
@@ -27,7 +28,6 @@ import { ElementStates } from "../types/element-states";
 //     }
 //     return arr;
 //   };
-const timeout = 400;
 
   export const getIndex = async (arr: TColumnArray[], start: number, comparedValueIndex: number, metod: TTypeSort, 
     setRandomArray:Dispatch<SetStateAction<TColumnArray[]>>):Promise<number> => {
@@ -42,7 +42,7 @@ const timeout = 400;
             arr[comparedValueIndex].state = ElementStates.Changing;
             setRandomArray([...arr]);
           resolve(null);
-        }, timeout);
+        }, SHORT_DELAY_IN_MS);
       });
    
     if(metod === "up") {
@@ -66,7 +66,7 @@ const timeout = 400;
         arr[comparedValueIndex].state = ElementStates.Changing;
         // setRandomArray([...arr]);
         resolve(null);
-      }, timeout);
+      }, SHORT_DELAY_IN_MS);
     });
 
     return getIndex(arr, start + 1, comparedValueIndex, metod, setRandomArray)
@@ -94,7 +94,7 @@ const timeout = 400;
         }
         setRandomArray([...arr])
         resolve(null);
-      }, timeout);
+      }, SHORT_DELAY_IN_MS);
     });
 
     return getSelectionSort(arr, metod, setRandomArray, start + 1);

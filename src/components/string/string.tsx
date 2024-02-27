@@ -1,7 +1,9 @@
-import React, { ChangeEvent, useState, useEffect} from "react";
+import React, { ChangeEvent, useState } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { ElementStates } from "../../types/element-states";
 import { useCustomEffect } from "../../utility/use-custom-effect";
+import { DELAY_IN_MS } from "../../constants/delays";
+import { getDelay } from "../../utility/getDelay";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
@@ -19,18 +21,17 @@ export const StringComponent: React.FC = () => {
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value)
   }
-  const handleReverse = () => {
+  const handleReverse = async() => {
     if(value !== '') {
       const defaultArray = value.split('').map(elem => ({letter: elem, status: ElementStates.Default}))
       setSortableArr(defaultArray)
       setLoader(true)
 
-      setTimeout(() => {
-        reverse(defaultArray)
-      }, 1000);
+      await getDelay(DELAY_IN_MS)
+      reverse(defaultArray)
     }
   };
-  const reverse = (arr: TArrayStatus[], start = 0, end = arr.length - 1) => {
+  const reverse = async(arr: TArrayStatus[], start = 0, end = arr.length - 1) => {
     const newArr = [...arr];
 
     if (start <= end) {
@@ -38,12 +39,11 @@ export const StringComponent: React.FC = () => {
       newArr[end].status = ElementStates.Changing;
       setSortableArr(newArr);
   
-      setTimeout(() => {
-        newArr[start].status = ElementStates.Modified;
-        newArr[end].status = ElementStates.Modified;
-        [newArr[start], newArr[end]] = [newArr[end], newArr[start]];
-        reverse(newArr, start + 1, end - 1);
-      }, 1000);
+      await getDelay(DELAY_IN_MS)
+      newArr[start].status = ElementStates.Modified;
+      newArr[end].status = ElementStates.Modified;
+      [newArr[start], newArr[end]] = [newArr[end], newArr[start]];
+      reverse(newArr, start + 1, end - 1);
     } else {
       setLoader(false)
       setSortableArr(newArr)

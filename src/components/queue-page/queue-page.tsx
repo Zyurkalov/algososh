@@ -4,7 +4,8 @@ import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { useCustomEffect } from "../../utility/use-custom-effect";
-import { Queue } from "./class-queue";
+import { getDelay } from "../../utility/getDelay";
+import { Queue } from "../../utility/class-queue";
 import { ElementStates } from "../../types/element-states";
 import style from "./queue-page.module.css"
 import "../../index.css"
@@ -14,7 +15,6 @@ export const QueuePage: React.FC = () => {
     value: string;
     state: ElementStates
   }
-
   const newQueue = useMemo(() => new Queue<TStackElem >(7), []);
   const {enqueue, dequeue, isHeader, isTail, isEmpty, getContainer, remove, interrupt} = newQueue
 
@@ -22,49 +22,46 @@ export const QueuePage: React.FC = () => {
   const [update, setUpdate] = useState(false);
   const [enqueueLoader, setEnqueueLoader] = useState(false);
   const [dequeueLoader, setDequeueLoader] = useState(false);
-  const timeout = 500;
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
   };
-  const onPush =  () => {
+  const onPush =  async() => {
     if(input === '') {
       return
     }
     enqueue({value: input, state: ElementStates.Changing})
     setEnqueueLoader(true)
 
-    setTimeout(() => {
-      if (isTail() !== undefined) {
-        isTail()!.state = ElementStates.Default
-      }
-      setEnqueueLoader(false)
-      setInput('')
-    }, timeout);
+    await getDelay()
+    if (isTail() !== undefined) {
+      isTail()!.state = ElementStates.Default
+    }
+    setEnqueueLoader(false)
+    setInput('')
+
   }
 
-  const onPop = () => {
+  const onPop = async() => {
     if (isHeader() !== undefined) {
       isHeader()!.state = ElementStates.Changing
     }
     setDequeueLoader(true)
 
-    setTimeout(() => {
-      if(isHeader() === isTail()) {
-        remove()
-      } else {
-        dequeue()
-      }
-      setDequeueLoader(false)
-    }, timeout);
+    await getDelay()
+    if(isHeader() === isTail()) {
+      remove()
+    } else {
+      dequeue()
+    }
+    setDequeueLoader(false)
   }
-  const onRemoveAll = () => {
+  const onRemoveAll = async() => {
     setUpdate(true)
 
-    setTimeout(() => {
-      remove()
-      setUpdate(false)
-    }, timeout);
+    await getDelay()
+    remove()
+    setUpdate(false)
   }
 
   const showHead = (index: number) => {

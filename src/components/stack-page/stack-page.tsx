@@ -1,10 +1,11 @@
 import React, { ChangeEvent, useState, useMemo } from "react";
+import { getDelay } from "../../utility/getDelay";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { useCustomEffect } from "../../utility/use-custom-effect";
-import { Stack } from "./class-stack";
+import { Stack } from "../../utility/class-stack";
 import { ElementStates } from "../../types/element-states";
 import style from "./stack-page.module.css"
 import "../../index.css"
@@ -21,27 +22,27 @@ export const StackPage: React.FC = () => {
   const [adding, setAdding] = useState(false)
   const [deletion, setDeletion] = useState(false)
   const [update, setUpdate] = useState(false);
-  const timeout = 500;
   
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
   };
-  const onPush =  () => {
+  const onPush = async() => {
     if(input === '') {
       return
     }
     push({value: input, state: ElementStates.Changing})
     setAdding(true)
     
-    setTimeout(() => {
+    await getDelay()
+    // setTimeout(() => {
       if (peak() !== null) {
         peak()!.state = ElementStates.Default
       }
       setInput('')
       setAdding(false)
-    }, timeout);
+    // }, timeout);
   }
-  const onPop = () => {
+  const onPop = async() => {
     if(getContainer().length <= 0) {
       return
     }
@@ -51,19 +52,21 @@ export const StackPage: React.FC = () => {
     }
     setDeletion(true)
 
-    setTimeout(() => {
+    await getDelay()
+    // setTimeout(() => {
       // const upd = !update
       pop()
       setDeletion(false)
-    }, timeout);
+    // }, timeout);
   }
-  const onRemove = () => {
+  const onRemove = async () => {
     setUpdate(true)
 
-    setTimeout(() => {
+    await getDelay()
+    // setTimeout(() => {
       remove()
       setUpdate(false)
-    }, timeout);
+    // }, timeout);
   }
 
   const showTop = (index: number) => {

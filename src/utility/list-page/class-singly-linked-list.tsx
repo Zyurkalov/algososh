@@ -1,3 +1,5 @@
+import { isThisTypeNode } from "typescript";
+
 export class Node<T> {
   data: T;
   next: Node<T> | null;
@@ -61,6 +63,7 @@ export class SinglyLinkedList<T> implements TLinkedList<T> {
         while (current !== null) {
           result.push(current.data);
           current = current.next;
+        //   console.log(true)
         }
         return result;
     }
@@ -80,49 +83,63 @@ export class SinglyLinkedList<T> implements TLinkedList<T> {
             return target.data;
         }
     }
+
     append(element: T, targetIndex: number = 0) {
         const node = new Node(element);
-        if(this.head === null) {
-            this.head = node
+        
+        if (this.head === null) {
+            this.head = node;
             this.tail = node;
-            this.size++
-            return
-        }
-        let checkingIndex = this.checkIndex(targetIndex);
-        let target = this.head;
-        let previous: Node<T> | null = null;
-        let index = 0;
-         
-        while (index < checkingIndex  && target.next !== null) {
-            previous = target;
-            target = target.next;
-            index++;
-        }
-        if (index === checkingIndex ) {
-            if (checkingIndex  === 0) {
-                node.next = this.head;
-                this.head = node;
-            } else {
-                node.next = target;
-                if (previous) {
-                    previous.next = node;
-                }
-            }
-            if (target.next === null) {
-                this.tail = node;
-            }
             this.size++;
-        }         
-    }
+        } else {
+            let checkingIndex = this.checkIndex(targetIndex);
+            let target = this.head;
+            let previous: Node<T> | null = null;
+            let index = 0;
+    
+            while (index < checkingIndex && target.next !== null) {
+                previous = target;
+                target = target.next;
+                index++;
+            }
+    
+            if (index === checkingIndex) {
+                if (checkingIndex === 0) {
+                    node.next = target;
+                    this.head = node;
+                    if (target === this.tail) {
+                        this.tail = target;
+                    }
+                } else {
+                    node.next = target;
+                    if (previous) {
+                        previous.next = node;
+                    }
+                }
+                this.size++;
+            } else if (target === this.tail) {
+                this.tail.next = node;
+                this.tail = node;
+                this.size++;
+            }
+        }
+    }   
     delete(targetIndex: number) {
+        
         if (targetIndex < 0 || this.head === null) {
             return;
         }
-        if (targetIndex === 0) {
-            this.head = this.head.next;
-            if (this.head === null) {
-                this.tail = null;
+        if (targetIndex === 0) {      
+            if(!this.head && this.tail) {
+                this.head = this.tail
+                this.size--;    
+                return;
             }
+            // if (!this.head && this.tail) {
+            //     this.tail = null;
+            //     console.log(false)
+            // }
+            this.head = this.head.next;
             this.size--;
             return;
         }
@@ -131,20 +148,20 @@ export class SinglyLinkedList<T> implements TLinkedList<T> {
         let previous: Node<T> | null = null;
         let index = 0;
     
-        while (target !== null && index < checkingIndex) {
+        while (target !== null && index < checkingIndex && target.next !== null) {
             previous = target;
             target = target.next;
             index++;
         }
-    
-        if (target !== null && previous !== null) {
+        if (target !== null && previous) {
             previous.next = target.next;
-            if (previous.next === null) {
+            if (target === this.tail) {
                 this.tail = previous;
             }
             this.size--;
         }
     }
+
     clearAll() {
         let current = this.head;
         let next = null;
@@ -157,6 +174,6 @@ export class SinglyLinkedList<T> implements TLinkedList<T> {
         }
     }
     checkIndex(targetIndex: number): number {
-        return targetIndex < 0 ? 0 : targetIndex > this.getSize() ? this.getSize()-1 : targetIndex
+        return targetIndex < 0 ? 0 : targetIndex >= this.getSize() ? this.getSize() : targetIndex
     }
 }

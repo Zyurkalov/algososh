@@ -1,14 +1,14 @@
 import React, {ChangeEvent, useState} from "react";
 import { getFibonacci } from "../../utility/get-fibonacci";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
+import { DELAY_IN_MS } from "../../constants/delays";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import { ElementStates } from "../../types/element-states";
+import { useCustomEffect } from "../../utility/use-custom-effect";
 import "../../index.css"
 import styles from "./fibonacci-page.module.css";
-import { useCustomEffect } from "../../utility/use-custom-effect";
-
 
 export const FibonacciPage: React.FC = () => {
   const [value, setValue] = useState(0)
@@ -25,8 +25,8 @@ export const FibonacciPage: React.FC = () => {
       visualizer(value)
     }
   };
-  async function visualizer(value: number) {
-    const fibList = await getFibonacci(value);
+   const visualizer = async (value: number) => {
+    const fibList = getFibonacci(value);
     let i = 0;
 
     if(fibList.length === 1) {
@@ -41,7 +41,7 @@ export const FibonacciPage: React.FC = () => {
         setLoader(false);
         clearInterval(interval);
       }
-    }, 500);
+    }, DELAY_IN_MS);
   }
   useCustomEffect(handleClick, loader)
 

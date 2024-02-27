@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction } from "react";
 import { TColumnArray } from "../components/sorting-page/sorting-page";
 import { TTypeSort } from "../components/sorting-page/sorting-page";
+import { SHORT_DELAY_IN_MS } from "../constants/delays";
 import { ElementStates } from "../types/element-states";
 
-const timeout = 400;
 // export const getBubbleSort = (sortingArr: TColumnArray[], metod: TTypeSort) => {
 //   let arr = [...sortingArr];
 
@@ -52,7 +52,7 @@ const bubbleSort = async (arr: TColumnArray[], method: TTypeSort, start: number,
         }
         setRandomArray([...arr]);
         resolve(null);
-      }, timeout);
+      }, SHORT_DELAY_IN_MS);
     });
 
     if(!youShallNotPass) {
@@ -80,7 +80,7 @@ const innerBubbleSort = async (arr: TColumnArray[], method: TTypeSort, next: num
         }
         setRandomArray([...arr]);
         resolve(null);
-      }, timeout);
+      }, SHORT_DELAY_IN_MS);
     });
 
     if (method === "up" && arr[next].value > arr[next + 1].value) {

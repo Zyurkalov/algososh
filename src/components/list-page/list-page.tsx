@@ -1,7 +1,9 @@
-import React, { ChangeEvent, useState, useEffect, useMemo } from "react";
+import React, { ChangeEvent, useState, useMemo } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { ElementStates } from "../../types/element-states";
-import { LinkedList } from "./class-list-page";
+import { Node, SinglyLinkedList } from "../../utility/list-page/class-singly-linked-list";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
+import { getDelay } from "../../utility/getDelay";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
@@ -16,7 +18,17 @@ export const ListPage: React.FC = () => {
     replacingHeader?: string | undefined;
     replacingBottom?: string | undefined;
   };
-  const newList = useMemo(() => new LinkedList<TElem>(), []);
+
+  const nodes = useMemo(
+    () => [
+      new Node({ value: "1", state: ElementStates.Default }),
+      new Node({ value: "22", state: ElementStates.Default }),
+      new Node({ value: "3", state: ElementStates.Default }),
+      new Node({ value: "end", state: ElementStates.Default }),
+    ],
+    []
+  );
+  const nodeList = useMemo(() => new SinglyLinkedList<TElem>(nodes), []);
 
   const [value, setValue] = useState("");
   const [index, setIndex] = useState("");
@@ -27,15 +39,28 @@ export const ListPage: React.FC = () => {
   const [removingToTail, setRemovingToTail] = useState(false);
   const [addingByIndex, setAddingByIndex] = useState(false);
   const [removingByIndex, setRemovingByIndex] = useState(false);
-  const [update, setUpdate] = useState(false);
-  const timeout = 800;
+  const [update, setUpdate] = useState(false); //служит для обновления стилей
+
+  const allSetReset = () => {
+    setLoader(false)
+    setAddingToHead(false)
+    setAddingToTail(false)
+    setRemovingToHead(false)
+    setRemovingToTail(false)
+    setAddingByIndex(false)
+    setRemovingByIndex(false)
+  }
 
   const onChangeValue = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
   };
   const onChangeIndex = (event: ChangeEvent<HTMLInputElement>) => {
-    setIndex(event.target.value);
+    const inputNumber = parseInt(event.target.value);
+    if (inputNumber >= 0) {
+      setIndex(event.target.value);
+    }
   };
+
   const smallCirleHeader = (elem: TElem, index: number) => {
     return elem.replacingHeader ? (
       <Circle
@@ -43,7 +68,9 @@ export const ListPage: React.FC = () => {
         state={ElementStates.Changing}
         isSmall={true}
       ></Circle>
-    ) : index === 0 ? "head" : null;
+    ) : index === 0 ? (
+      "head"
+    ) : null;
   };
   const smallCirleBottom = (elem: TElem, index: number) => {
     return elem.replacingBottom ? (
@@ -52,368 +79,235 @@ export const ListPage: React.FC = () => {
         state={ElementStates.Changing}
         isSmall={true}
       ></Circle>
-    ) : index === listSize() ? "tail" : null;
+    ) : index === listSize() ? (
+      "tail"
+    ) : null;
   };
-////////////////////////////////////////////////////////////////////////
-
-  const addByTarget = async (str: string, targetIndex: "head" | "tail") => {
-    targetIndex === "head" ? setAddingToHead(true) : setAddingToTail(true)
-    setLoader(true)
-    let isListEmpty = false
-
-    const objModifed = {
-      value: str,
-      state: ElementStates.Modified,
-      replacingHeader: undefined,
-    };
-    const objNull = {
-      value: undefined,
-      state: ElementStates.Default,
-      replacingHeader: undefined,
-    };
-    if(listSize() === 0) {
-      isListEmpty = true
-      targetIndex = "head"
-      newList.append(objNull , "head")
-    }
-    if (targetIndex === "head") {
-      newList.returnIt(0)!.replacingHeader = str;
-    } else {
-      if(listSize() === 1) {
-        newList.append(objNull , "tail")
-      }
-      newList.returnIt(listSize())!.replacingHeader = str;
-    }
-    
-    setTimeout(() => {
-      if(isListEmpty) {
-        newList.returnIt(0)!.replacingHeader = undefined;
-        newList.returnIt(0)!.state = ElementStates.Modified;
-        newList.returnIt(0)!.value = str;
-      } else {
-        newList.append(objModifed, targetIndex);
-        if (targetIndex === "head") {
-          newList.returnIt(1)!.replacingHeader = undefined;
-        } else {
-          newList.returnIt(listSize() - 2)!.replacingHeader = undefined;
-        }
-      }
-      setUpdate((prev) => !prev);
-    }, timeout);
-
-    setTimeout(() => {
-      if (targetIndex === "head") {
-        newList.returnIt(0)!.state = ElementStates.Default;
-      } else {
-        newList.returnIt(listSize())!.state = ElementStates.Default;
-      }
-      isListEmpty = false;
-      targetIndex === "head" ? setAddingToHead(false) : setAddingToTail(false)
-      setValue("");
-      setLoader(false)
-    }, timeout * 2);
-  };
-
-////////////////////////////////////////////////////////////////////////
-  const addByIndex = async (str: string, targetIndex: number = 0) => {
-    setLoader(true)
-    setAddingByIndex(true)
+  ////////////////////////////////////////////////////////////////////////
+  const addValue = async (str: string, targetIndex: number = 0) => {
+    setLoader(true);
 
     const objDefault = {
       value: undefined,
       state: ElementStates.Changing,
       replacingHeader: value,
     };
-    
-    if(listSize()<= 0) {
-      setAddingByIndex(false)
-      addByTarget(str, "head")
-      return
-    }
 
-    let size = listSize() <= targetIndex ? listSize() : targetIndex;
-    const target = listSize() <= targetIndex ? listSize() + 1 : size;
-    let current: TElem | undefined = undefined;
-
-    // if(listSize() === 1) {
-    //   size--
-    // }
-    for (let i = 0; i <= size; i++) {
+    const target = Math.min(listSize(), targetIndex);
+    if(nodeList.getSize() > 0){
+    for (let i = 0; i <= target; i++) {
       await new Promise((resolve) => {
         setTimeout(() => {
-          
-          current = newList.returnIt(i);
-          current!.replacingHeader = str;
-          
           if (i > 0) {
-            newList.returnIt(i - 1)!.state = ElementStates.Changing;
+            nodeList.getIt(i - 1)!.state = ElementStates.Changing;
           }
-          
+          const current = nodeList.getIt(i);
+          current!.replacingHeader = str;
           setUpdate((prev) => !prev);
           current!.replacingHeader = undefined;
           resolve(null);
-        }, timeout);
+        }, SHORT_DELAY_IN_MS);
       });
+    }}
+
+    await getDelay(); ////// delay
+    nodeList.append(objDefault, target);
+    setValue("");
+
+    await getDelay(); ////// delay
+    const obj = nodeList.getIt(target);
+    if (obj) {
+      obj.value = str;
+      obj.state = ElementStates.Modified;
+      obj.replacingHeader = undefined;
     }
-    setTimeout(() => {
-      newList.append(objDefault, target);
-      setValue("");
-    }, timeout * 1);
+    setUpdate((prev) => !prev);
 
-    setTimeout(() => {
-      let obj = newList.returnIt(target);
-      if (obj) {
-        obj.value = str;
-        obj.state = ElementStates.Modified;
-        obj.replacingHeader = undefined;
+    await getDelay(); ////// delay
+    for (let i = 0; i <= target; i++) {
+      const obj = nodeList.getIt(i);
+      if (obj?.state === ElementStates.Default) {
+        return;
       }
-      setUpdate((prev) => !prev);
-    }, timeout * 2);
-
-    setTimeout(() => {
-      for (let i = 0; i <= size; i++) {
-        let obj = newList.returnIt(i);
-        if (obj?.state === ElementStates.Default) {
-          return;
-        }
-        obj &&
-          (() => {
-            obj.state = ElementStates.Default;
-          })();
-      }
-      setAddingByIndex(false)
-      setLoader(false)
-      setValue("");
-      setIndex("");
-    }, timeout * 3);
-  };
-
-  // const deleteItTarget = (targetIndex: "head" | "tail") => {
-  //   if(listSize() === 0) {
-  //     return 
-  //   }
-  //   setLoader(true)
-  //   let target = 0
-  //   if (targetIndex === "head") {
-  //     target = 0
-  //   }else{
-  //     target = listSize()-1
-  //   }
-  //   let current = newList.returnIt(target)!.value
-  //   newList.returnIt(target)!.value = undefined
-  //   newList.returnIt(target)!.replacingBottom = current
-
-  //   setValue("");
-  //   setIndex("");
-  //   setTimeout(() => {
-  //     newList.deleteIt(target)
-  //     setLoader(false)
-  //   }, timeout);
-  // };
-
+      obj && (obj.state = ElementStates.Default);
+    }
+    
+    allSetReset();
+    setValue("");
+    setIndex("");
+};
   ////////////////////////////////////////////////////////////////////////
-  const deleteItTarget = (targetIndex: "head" | "tail") => {
+  const deleteValue = async (targetIndex: number) => {
+    // setRemovingByIndex(true);
     if (listSize() === 0) {
       return;
     }
+    const deletTarget =
+      listSize() <= targetIndex ? listSize() - 1 : targetIndex;
     setLoader(true);
-    targetIndex === "head" ? setRemovingToHead(true) : setRemovingToTail(true)
-    let target = targetIndex === "head" ? 0 : listSize() - 1;
-  
-    const currentElement = newList.returnIt(target);
-    if (currentElement) {
-      const currentValue = currentElement.value;
-      currentElement.value = undefined;
-      currentElement.replacingBottom = currentValue;
-    }
-    setTimeout(() => {
-      newList.deleteIt(target);
-      targetIndex === "head" ? setRemovingToHead(false) : setRemovingToTail(false)
-      setLoader(false);
-    }, timeout);
-  };
 
-////////////////////////////////////////////////////////////////////////
-  const deleteItIndex = async(targetIndex: number) => {
-    setRemovingByIndex(true)
-    if(listSize() === 0) {
-      return 
-    }
-    const size = listSize() <= targetIndex ? listSize()-1 : targetIndex;
-    // let current: TElem | undefined = undefined;
-    setLoader(true)
+    if(targetIndex === listSize()-1) {
+      const current = nodeList.getIt(targetIndex)
+      current.state = ElementStates.Changing;
+      setUpdate((prev) => !prev);
 
-    for (let i = 0; i <= size; i++) {
+      await getDelay(); ////////// delay
+      current.state = ElementStates.Default;
+      current.replacingBottom = current.value;
+      current.value = undefined;
+      setUpdate((prev) => !prev);
+
+      await getDelay(); ////////// delay
+      nodeList.delete(targetIndex)
+      allSetReset()
+      return;
+    }
+
+    for (let i = 0; i <= deletTarget; i++) {
       await new Promise((resolve) => {
         setTimeout(() => {
-          // current = newList.returnIt(i);
-          // newList.returnIt(i)!.state = ElementStates.Changing;
-          
-          // setUpdate((prev) => !prev);
-          const current = newList.returnIt(i);
-          if (current) {
-            current.state = ElementStates.Changing;
-          }
+          const current = nodeList.getIt(i);
+          current.state = ElementStates.Changing;
           setUpdate((prev) => !prev);
           resolve(null);
-        }, timeout);
+        }, SHORT_DELAY_IN_MS);
       });
-    } 
-      // setTimeout(() => {
-      //   current!.state = ElementStates.Default
-      //   current!.replacingBottom = current!.value;
-      //   current!.value = undefined
-      //   setUpdate((prev) => !prev);
-      // }, timeout);
-      setTimeout(() => {
-        if (size >= 0) {
-          const current = newList.returnIt(size);
-          if (current) {
-            current.state = ElementStates.Default;
-            current.replacingBottom = current.value;
-            current.value = undefined;
-          }
-          setUpdate((prev) => !prev);
-        }
-      }, timeout);
+    }
+    await getDelay(); ////////// delay
+    if (deletTarget >= 0) {
+      const current = nodeList.getIt(deletTarget);
+      current.state = ElementStates.Default;
+      current.replacingBottom = current.value;
+      current.value = undefined;
+      setUpdate((prev) => !prev);
+    }
+    await getDelay(); ////////// delay
+    nodeList.delete(deletTarget);
+    setUpdate((prev) => !prev);
 
-      setTimeout(() => {
-        newList.deleteIt(size);
-        setUpdate((prev) => !prev);
-      }, timeout*2);
+    await getDelay(); ////////// delay
+    if (listSize() === 0) {
+      allSetReset()
+      setValue("");
+      setIndex("");
+      return;
+    }
+    for (let i = 0; i <= deletTarget; i++) {
+      let obj = nodeList.getIt(i);
 
-      setTimeout(() => {
-        if(listSize() === 0) {
-          setLoader(false)
-          setValue("");
-          setIndex("");
-          return;
-        }
-        for (let i = 0; i <= size; i++) {
-          let obj = newList.returnIt(i);
-          
-          if (obj === undefined || obj.state === ElementStates.Default ) { 
-            setLoader(false)
-            setRemovingByIndex(false)
-            setValue("");
-            setIndex("");
-            return;
-          }
-          obj &&
-            (() => {
-              obj.state = ElementStates.Default;
-            })();
-        }
-      }, timeout * 3);
+      if (obj === undefined || obj.state === ElementStates.Default) {
+        allSetReset()
+        setValue("");
+        setIndex("");
+        return;
+      }
+      obj &&
+        (() => {
+          obj.state = ElementStates.Default;
+        })();
+    }
+    setRemovingByIndex(false);
   };
-
   const listSize = (): number => {
-    return newList.getSize();
+    return nodeList.getSize();
   };
-  useEffect(() => {
-    newList.append({ value: "1", state: ElementStates.Default });
-    newList.append({ value: "33", state: ElementStates.Default });
-    newList.append({ value: "02", state: ElementStates.Default }, 1);
-    newList.append({ value: "end", state: ElementStates.Default }, 4);
-    setUpdate(!update);
-  }, []);
 
   return (
     <SolutionLayout title="Связный список">
       <div className={`box-container ${style.boxContainer__hight}`}>
         <div className={style.boxContainer_inputBox}>
-        <div className="input-box">
-          <Input
-            placeholder="Введите значение"
-            isLimitText={true}
-            maxLength={4}
-            value={value}
-            onChange={onChangeValue}
-            extraClass={`${style.input__size}`}
-            disabled={loader}
-          ></Input>
-          <Button
-            text="Добавить в head"
-            isLoader={addingToHead}
-            onClick={() => addByTarget(value, "head")}
-            disabled={value === "" || loader}
-            extraClass={`${style.button__size_S}`}
-          >
-            {" "}
-          </Button>
-          <Button
-            text="Добавить в tail"
-            isLoader={addingToTail}
-            onClick={() => addByTarget(value, "tail")}
-            disabled={value === "" || loader}
-            extraClass={`${style.button__size_S}`}
-          >
-            {" "}
-          </Button>
-          <Button
-            text="Удалить из head"
-            isLoader={removingToHead}
-            onClick={() => deleteItTarget("head")}
-            disabled={listSize() <= 0 || loader}
-            extraClass={`${style.button__size_S}`}
-          >
-            {" "}
-          </Button>
-          <Button
-            text="Удалить из tail"
-            isLoader={removingToTail}
-            onClick={() => deleteItTarget("tail")}
-            disabled={listSize() <= 0 || loader}
-            extraClass={`${style.button__size_S}`}
-          >
-            {" "}
-          </Button>
-        </div>
-        <div className="input-box">
-          <Input
-            placeholder="Введите индекс"
-            type="number"
-            value={index}
-            onChange={onChangeIndex}
-            extraClass={`${style.input__size}`}
-            disabled={loader}
-          ></Input>
-          <Button
-            text="Добавить по индексу"
-            isLoader={addingByIndex}
-            onClick={() => addByIndex(value, parseInt(index))}
-            disabled={index === "" || value === "" || loader}
-            extraClass={`${style.button__size_M}`}
-          >
-            {" "}
-          </Button>
-          <Button
-            text="Удалить по индексу"
-            isLoader={removingByIndex}
-            onClick={() => deleteItIndex(parseInt(index))}
-            disabled={index === "" || listSize() <= 0 || loader}
-            extraClass={`${style.button__size_M}`}
-          >
-            {" "}
-          </Button>
-        </div>
+          <div className="input-box">
+            <Input
+              placeholder="Введите значение"
+              isLimitText={true}
+              maxLength={4}
+              value={value}
+              onChange={onChangeValue}
+              extraClass={`${style.input__size}`}
+              disabled={loader}
+            ></Input>
+            <Button
+              text="Добавить в head"
+              isLoader={addingToHead}
+              onClick={() => {addValue(value); setAddingToHead(true)}}
+              disabled={value === "" || loader}
+              extraClass={`${style.button__size_S}`}
+            >
+              {" "}
+            </Button>
+            <Button
+              text="Добавить в tail"
+              isLoader={addingToTail}
+              onClick={() => {addValue(value, nodeList.getSize()); setAddingToTail(true)}}
+              disabled={value === "" || loader}
+              extraClass={`${style.button__size_S}`}
+            >
+              {" "}
+            </Button>
+            <Button
+              text="Удалить из head"
+              isLoader={removingToHead}
+              onClick={() => {deleteValue(0); setRemovingToHead(true)}}
+              disabled={listSize() <= 0 || loader}
+              extraClass={`${style.button__size_S}`}
+            >
+              {" "}
+            </Button>
+            <Button
+              text="Удалить из tail"
+              isLoader={removingToTail}
+              onClick={() => {deleteValue(nodeList.getSize() - 1); setRemovingToTail(true)}}
+              disabled={listSize() <= 0 || loader}
+              extraClass={`${style.button__size_S}`}
+            >
+              {" "}
+            </Button>
+          </div>
+          <div className="input-box">
+            <Input
+              placeholder="Введите индекс"
+              type="number"
+              value={index}
+              onChange={onChangeIndex}
+              extraClass={`${style.input__size}`}
+              disabled={loader}
+            ></Input>
+            <Button
+              text="Добавить по индексу"
+              isLoader={addingByIndex}
+              onClick={() => {addValue(value, parseInt(index)); setAddingByIndex(true)}}
+              disabled={index === "" || value === "" || loader}
+              extraClass={`${style.button__size_M}`}
+            >
+              {" "}
+            </Button>
+            <Button
+              text="Удалить по индексу"
+              isLoader={removingByIndex}
+              onClick={() => {deleteValue(parseInt(index)); setRemovingByIndex(true)}}
+              disabled={index === "" || listSize() <= 0 || loader}
+              extraClass={`${style.button__size_M}`}
+            >
+              {" "}
+            </Button>
+          </div>
         </div>
         <ul className="list-box">
-          {newList !== null
-            ? newList.displayList().map((elem, index) => {
-              return (
-                <li className="list-box_circle" key={index}>
-                  {index !== 0 ? <ArrowIcon></ArrowIcon> : null}
-                  <Circle
-                    letter={elem.value}
-                    state={elem.state}
-                    index={index}
-                    head={smallCirleHeader(elem, index)}
-                    tail={smallCirleBottom(elem, index+1)}
-                  ></Circle>
-                </li>
-              );
-            })
+          {nodeList !== null
+            ? nodeList.getList().map((elem, index) => {
+                return (
+                  <li className="list-box_circle" key={index}>
+                    {index !== 0 ? <ArrowIcon></ArrowIcon> : null}
+                    <Circle
+                      letter={elem.value}
+                      state={elem.state}
+                      index={index}
+                      head={smallCirleHeader(elem, index)}
+                      tail={smallCirleBottom(elem, index + 1)}
+                    ></Circle>
+                  </li>
+                );
+              })
             : null}
         </ul>
       </div>
