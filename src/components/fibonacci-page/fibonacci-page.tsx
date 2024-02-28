@@ -1,32 +1,29 @@
-import React, {ChangeEvent, useState} from "react";
+import React, {ChangeEvent, useState, useEffect} from "react";
 import { getFibonacci } from "../../utility/get-fibonacci";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { DELAY_IN_MS } from "../../constants/delays";
+import { useForm } from "../../utility/hooks/useForm";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import { ElementStates } from "../../types/element-states";
 import { useCustomEffect } from "../../utility/use-custom-effect";
 import "../../index.css"
-import styles from "./fibonacci-page.module.css";
 
 export const FibonacciPage: React.FC = () => {
-  const [value, setValue] = useState(0)
   const [loader, setLoader] = useState(false)
   const [fibonacci, setFibonacci] = useState<number[]>([])
+  const {index, handleIndexChange} = useForm('', '');
 
-  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setValue(parseInt(event.target.value, 10));
-  }
    const handleClick = () => {
     setLoader(true)
     setFibonacci([])
-    if(value < 20) {
-      visualizer(value)
+    if(parseInt(index) < 20) {
+      visualizer(parseInt(index))
     }
   };
-   const visualizer = async (value: number) => {
-    const fibList = getFibonacci(value);
+   const visualizer = async (index: number) => {
+    const fibList = getFibonacci(index);
     let i = 0;
 
     if(fibList.length === 1) {
@@ -45,12 +42,13 @@ export const FibonacciPage: React.FC = () => {
   }
   useCustomEffect(handleClick, loader)
 
+
   return (
     <SolutionLayout title="Последовательность Фибоначчи">
-      <div className={`box-container ${styles["box-container__fibonacci"]}`}>
+      <div className={`box-container`}>
         <div className="input-box">
-            <Input placeholder="Введите число" isLimitText={true} max={19} onChange={onChange} type={'number'} disabled={loader}></Input>
-            <Button text='Рассчитать' onClick={handleClick} isLoader={loader} disabled={value <= 0 || value > 19}> </Button>
+            <Input placeholder="Введите число" isLimitText={true} max={19} onChange={handleIndexChange} type={'number'} disabled={loader}></Input>
+            <Button text='Рассчитать' onClick={handleClick} isLoader={loader} disabled={isNaN(parseInt(index)) || parseInt(index) <= 0 || parseInt(index) > 19}> </Button>
         </div>
         <ul className="list-box">
           {fibonacci !== null

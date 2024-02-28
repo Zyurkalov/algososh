@@ -4,6 +4,7 @@ import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { useCustomEffect } from "../../utility/use-custom-effect";
+import { useForm } from "../../utility/hooks/useForm";
 import { getDelay } from "../../utility/getDelay";
 import { Queue } from "../../utility/class-queue";
 import { ElementStates } from "../../types/element-states";
@@ -18,19 +19,16 @@ export const QueuePage: React.FC = () => {
   const newQueue = useMemo(() => new Queue<TStackElem >(7), []);
   const {enqueue, dequeue, isHeader, isTail, isEmpty, getContainer, remove, interrupt} = newQueue
 
-  const [input, setInput] = useState('');
   const [update, setUpdate] = useState(false);
   const [enqueueLoader, setEnqueueLoader] = useState(false);
   const [dequeueLoader, setDequeueLoader] = useState(false);
+  const {value, setValue, handleValueChange} = useForm('', '')
 
-  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setInput(event.target.value);
-  };
   const onPush =  async() => {
-    if(input === '') {
+    if(value === '') {
       return
     }
-    enqueue({value: input, state: ElementStates.Changing})
+    enqueue({value: value, state: ElementStates.Changing})
     setEnqueueLoader(true)
 
     await getDelay()
@@ -38,8 +36,7 @@ export const QueuePage: React.FC = () => {
       isTail()!.state = ElementStates.Default
     }
     setEnqueueLoader(false)
-    setInput('')
-
+    setValue('')
   }
 
   const onPop = async() => {
@@ -86,8 +83,8 @@ export const QueuePage: React.FC = () => {
     <SolutionLayout title="Очередь">
        <div className="box-container">
         <div className={`input-box ${style["input-box__stackPage"]}`}>
-          <Input placeholder="Введите значение" isLimitText={true} maxLength={4} type={'text'} onChange={onChange} value={input} disabled={dequeueLoader || enqueueLoader || update}></Input>
-          <Button text='Добавить' onClick={() => onPush()} disabled={!input || interrupt() || dequeueLoader || update} isLoader={enqueueLoader}></Button>
+          <Input placeholder="Введите значение" isLimitText={true} maxLength={4} type={'text'} onChange={handleValueChange} value={value} disabled={dequeueLoader || enqueueLoader || update}></Input>
+          <Button text='Добавить' onClick={() => onPush()} disabled={!value || interrupt() || dequeueLoader || update} isLoader={enqueueLoader}></Button>
           <Button text='Удалить' onClick={() => onPop()} disabled={isEmpty() || enqueueLoader || update} isLoader={dequeueLoader}></Button>
           <Button text='Очистить' onClick={() => onRemoveAll()} extraClass={"ml-40"} disabled={isEmpty() || dequeueLoader || enqueueLoader} isLoader={update}></Button>
         </div>

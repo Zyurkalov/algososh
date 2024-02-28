@@ -4,6 +4,7 @@ import { ElementStates } from "../../types/element-states";
 import { Node, SinglyLinkedList } from "../../utility/list-page/class-singly-linked-list";
 import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 import { getDelay } from "../../utility/getDelay";
+import { useForm } from "../../utility/hooks/useForm";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
@@ -30,8 +31,6 @@ export const ListPage: React.FC = () => {
   );
   const nodeList = useMemo(() => new SinglyLinkedList<TElem>(nodes), []);
 
-  const [value, setValue] = useState("");
-  const [index, setIndex] = useState("");
   const [loader, setLoader] = useState(false);
   const [addingToHead, setAddingToHead] = useState(false);
   const [addingToTail, setAddingToTail] = useState(false);
@@ -40,6 +39,7 @@ export const ListPage: React.FC = () => {
   const [addingByIndex, setAddingByIndex] = useState(false);
   const [removingByIndex, setRemovingByIndex] = useState(false);
   const [update, setUpdate] = useState(false); //служит для обновления стилей
+  const {index, setIndex, handleIndexChange, value, setValue, handleValueChange} = useForm('', '')
 
   const allSetReset = () => {
     setLoader(false)
@@ -50,16 +50,6 @@ export const ListPage: React.FC = () => {
     setAddingByIndex(false)
     setRemovingByIndex(false)
   }
-
-  const onChangeValue = (event: ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-  };
-  const onChangeIndex = (event: ChangeEvent<HTMLInputElement>) => {
-    const inputNumber = parseInt(event.target.value);
-    if (inputNumber >= 0) {
-      setIndex(event.target.value);
-    }
-  };
 
   const smallCirleHeader = (elem: TElem, index: number) => {
     return elem.replacingHeader ? (
@@ -222,7 +212,7 @@ export const ListPage: React.FC = () => {
               isLimitText={true}
               maxLength={4}
               value={value}
-              onChange={onChangeValue}
+              onChange={handleValueChange}
               extraClass={`${style.input__size}`}
               disabled={loader}
             ></Input>
@@ -267,8 +257,10 @@ export const ListPage: React.FC = () => {
             <Input
               placeholder="Введите индекс"
               type="number"
+              isLimitText={parseInt(index) > listSize() -1}
+              max={listSize() -1}
               value={index}
-              onChange={onChangeIndex}
+              onChange={handleIndexChange}
               extraClass={`${style.input__size}`}
               disabled={loader}
             ></Input>
@@ -276,7 +268,7 @@ export const ListPage: React.FC = () => {
               text="Добавить по индексу"
               isLoader={addingByIndex}
               onClick={() => {addValue(value, parseInt(index)); setAddingByIndex(true)}}
-              disabled={index === "" || value === "" || loader}
+              disabled={index === "" || parseInt(index) < 0 || value === "" || loader || parseInt(index) > listSize() -1}
               extraClass={`${style.button__size_M}`}
             >
               {" "}
@@ -285,7 +277,7 @@ export const ListPage: React.FC = () => {
               text="Удалить по индексу"
               isLoader={removingByIndex}
               onClick={() => {deleteValue(parseInt(index)); setRemovingByIndex(true)}}
-              disabled={index === "" || listSize() <= 0 || loader}
+              disabled={index === "" || listSize() <= 0 || loader || parseInt(index) > listSize() -1}
               extraClass={`${style.button__size_M}`}
             >
               {" "}

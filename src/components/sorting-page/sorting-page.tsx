@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { getRandomArr } from "../../utility/get-random";
 import { Button} from "../ui/button/button";
@@ -50,6 +50,9 @@ export const SortingPage: React.FC = () => {
     setDescendingMetod(false)
     setAscendingMetod(false)
   }
+  useEffect(() => {
+    setRandomArray(getRandomArr())
+  },[])
   return (
     <SolutionLayout title="Сортировка массива">
       <div className="box-container">

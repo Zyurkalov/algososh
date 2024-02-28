@@ -7,6 +7,7 @@ import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { useCustomEffect } from "../../utility/use-custom-effect";
 import { Stack } from "../../utility/class-stack";
 import { ElementStates } from "../../types/element-states";
+import { useForm } from "../../utility/hooks/useForm";
 import style from "./stack-page.module.css"
 import "../../index.css"
 
@@ -18,29 +19,24 @@ export const StackPage: React.FC = () => {
   const newStack = useMemo(() => new Stack<TStackElem >(), []);
   const {push, pop, peak, remove, getSize, getContainer} = newStack
 
-  const [input, setInput] = useState('');
   const [adding, setAdding] = useState(false)
   const [deletion, setDeletion] = useState(false)
   const [update, setUpdate] = useState(false);
+  const {value, setValue, handleValueChange } = useForm('')
   
-  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setInput(event.target.value);
-  };
   const onPush = async() => {
-    if(input === '') {
+    if(value === '') {
       return
     }
-    push({value: input, state: ElementStates.Changing})
+    push({value: value, state: ElementStates.Changing})
     setAdding(true)
     
     await getDelay()
-    // setTimeout(() => {
       if (peak() !== null) {
         peak()!.state = ElementStates.Default
       }
-      setInput('')
+      setValue('')
       setAdding(false)
-    // }, timeout);
   }
   const onPop = async() => {
     if(getContainer().length <= 0) {
@@ -53,20 +49,15 @@ export const StackPage: React.FC = () => {
     setDeletion(true)
 
     await getDelay()
-    // setTimeout(() => {
-      // const upd = !update
       pop()
       setDeletion(false)
-    // }, timeout);
   }
   const onRemove = async () => {
     setUpdate(true)
 
     await getDelay()
-    // setTimeout(() => {
       remove()
       setUpdate(false)
-    // }, timeout);
   }
 
   const showTop = (index: number) => {
@@ -80,8 +71,8 @@ export const StackPage: React.FC = () => {
     <SolutionLayout title="Стек">
       <div className="box-container">
         <div className={`input-box ${style["input-box__stackPage"]}`}>
-          <Input placeholder="Введите значение" isLimitText={true} maxLength={4} type={'text'} onChange={onChange} value={input} disabled={adding || deletion || update}></Input>
-          <Button text='Добавить' onClick={() => onPush()} disabled={!input || deletion || update} isLoader={adding}></Button>
+          <Input placeholder="Введите значение" isLimitText={true} maxLength={4} type={'text'} onChange={handleValueChange} value={value} disabled={adding || deletion || update}></Input>
+          <Button text='Добавить' onClick={() => onPush()} disabled={!value || deletion || update} isLoader={adding}></Button>
           <Button text='Удалить' onClick={() => onPop()} disabled={getSize() <= 0 || adding || update} isLoader={deletion}></Button>
           <Button text='Очистить' onClick={() => onRemove()} extraClass={"ml-40"} disabled={getSize() <= 0 || adding || deletion} isLoader={update}></Button>
         </div>
