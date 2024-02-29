@@ -1,0 +1,17 @@
+.button__size_S {
+    min-width: 175px;
+}
+.button__size_M {
+    min-width: 362px;
+}
+.input__size {
+    width: 204px;
+}
+.boxContainer__hight {
+    min-height: 350px;
+}
+.boxContainer_inputBox {
+    display: flex;
+    flex-direction: column;
+    gap:8px;
+}
