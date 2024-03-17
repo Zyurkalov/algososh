@@ -28,16 +28,19 @@ export const getBubbleSort = async(sortingArr: TColumnArray[], method: TTypeSort
   return
 };
 
-const bubbleSort = async (arr: TColumnArray[], method: TTypeSort, start: number,
-  setRandomArray: Dispatch<SetStateAction<TColumnArray[]>>): Promise<void> => {
+export const bubbleSort = async (arr: TColumnArray[], method: TTypeSort, start: number,
+  setRandomArray: Dispatch<SetStateAction<TColumnArray[]>>): Promise<TColumnArray[]> => {
     let youShallNotPass = false
+    if (arr.length === 0) {
+      return arr; 
+    }
     if (start === arr.length - 1) {
+      arr[start].state = ElementStates.Modified;
       setRandomArray([...arr]);
-      return; 
+      return arr; 
     }
 
     await innerBubbleSort(arr, method, 0, setRandomArray);
-
     await new Promise((resolve) => {
       setTimeout(() => {
         let index = 0
@@ -58,7 +61,7 @@ const bubbleSort = async (arr: TColumnArray[], method: TTypeSort, start: number,
     if(!youShallNotPass) {
       return await bubbleSort(arr, method, start + 1, setRandomArray);
     }else{
-      return
+      return arr
     }
   };
 

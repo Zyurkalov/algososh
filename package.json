@@ -42,6 +42,7 @@
     ]
   },
   "devDependencies": {
+    "@sinonjs/fake-timers": "^11.2.2",
     "@testing-library/react": "^14.2.1",
     "@types/react-router-dom": "^5.3.3",
     "@types/react-test-renderer": "^18.0.7",
