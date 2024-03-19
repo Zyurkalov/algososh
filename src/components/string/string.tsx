@@ -42,7 +42,7 @@ export const StringComponent: React.FC = () => {
         <ul className="list-box" data-testid={'list-test'}>
           {sortableArr !== null
             ? sortableArr.map((elem, index) => {
-                return <li className="list-box_circle" key={index}><Circle letter={elem.letter} state={elem.status}></Circle></li>;
+                return <li className="list-box_circle" key={index} data-key={index}><Circle letter={elem.letter} state={elem.status}></Circle></li>;
               })
             : null}
         </ul>

@@ -11,15 +11,18 @@ describe('String-component', () => {
         const incomingArray = [
             { letter: '1', status: ElementStates.Default },
             { letter: '2', status: ElementStates.Default },
+            { letter: '3', status: ElementStates.Default },
+            { letter: '4', status: ElementStates.Default },
         ];
         await act(async () => {
             const result = await reverse(incomingArray, mockSetSortableArr, mockSetLoader);
             expect(result).toEqual([
+                { letter: '4', status: ElementStates.Modified },
+                { letter: '3', status: ElementStates.Modified },
                 { letter: '2', status: ElementStates.Modified },
                 { letter: '1', status: ElementStates.Modified },
             ]);
         });
-
     }); 
     it('разворачивает строку с НЕчётным количеством символов', async() => {
         const incomingArray = [
