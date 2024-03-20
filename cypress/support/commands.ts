@@ -58,6 +58,15 @@ Cypress.Commands.add("checkingEachList", (arrayStyle: string | string[], arrayTe
     }
   }
 );
+Cypress.Commands.add("checkRoutes", (key: string, anchor: string, header: string) => {
+  cy.get(anchor).click();
+  cy.url().should('include', key);
+
+  cy.get('h3').contains(`${header}`);
+  cy.get('button').not(':contains("К оглавлению")').should('exist');
+  cy.get('input').should('exist');
+})
+
 Cypress.Commands.add("goToVisit", (key?: string) => {
   if (key) {
     cy.visit(`${LOCALHOST}/${key}`);

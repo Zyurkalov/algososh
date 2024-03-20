@@ -1,63 +1,77 @@
 /// <reference types="cypress" />
 
 describe('Тестирование переходов по страницам', () => {
+  const routesOption = {
+    recursion: {
+      key: "/recursion",
+      anchor: '',
+      header: 'Строка'
+    },
+    fibonacci: {
+      key: "/fibonacci",
+      anchor: '',
+      header: 'Последовательность Фибоначчи'
+    },
+    sorting: {
+      key: "/sorting",
+      anchor: '',
+      header: 'Сортировка массива'
+    },
+    stack: {
+      key: "/stack",
+      anchor: '',
+      header: 'Стек'
+    },
+    queue: {
+      key: "/queue",
+      anchor: '',
+      header: 'Очередь'
+    },
+    list: {
+      key: "/list",
+      anchor: '',
+      header: 'Связный список'
+    }
+  }
   beforeEach(() => {
         cy.goToVisit();
       });
 
     it('Строка', () => {
-      cy.get('a[href="/recursion"]').click();
-      cy.url().should('include', '/recursion');
-
-      cy.get('h3').contains('Строка');
-      cy.get('button').not(':contains("К оглавлению")').should('exist');
-      cy.get('input').should('exist');
+      const option = routesOption.recursion
+      option.anchor = `a[href="${option.key}"]`
+      cy.checkRoutes(option.key, option.anchor, option.header)
     });
 
-    it('Последовательность Фибоначчи', () => {
-      cy.get('a[href="/fibonacci"]').click();
-      cy.url().should('include', '/fibonacci');
-
-      cy.get('h3').contains('Последовательность Фибоначчи');
-      cy.get('button').not(':contains("К оглавлению")').should('exist');
-      cy.get('input').should('exist');
+    it('Последовательность Фибоначи', () => {
+      const option = routesOption.fibonacci
+      option.anchor = `a[href="${option.key}"]`
+      cy.checkRoutes(option.key, option.anchor, option.header)
     });
 
     it('Сортировка массива', () => {
-      cy.get('a[href="/sorting"]').click();
-      cy.url().should('include', '/sorting');
-
-      cy.get('h3').contains('Сортировка массива');
-      cy.get('button').not(':contains("К оглавлению")').should('exist');
-      cy.get('label').should('exist');
+      const option = routesOption.sorting
+      option.anchor = `a[href="${option.key}"]`
+      cy.checkRoutes(option.key, option.anchor, option.header)
     });
 
     it('Стек', () => {
-      cy.get('a[href="/stack"]').click();
-      cy.url().should('include', '/stack');
-
-      cy.get('h3').contains('Стек');
-      cy.get('button').not(':contains("К оглавлению")').should('exist');
-      cy.get('input').should('exist');
+      const option = routesOption.stack
+      option.anchor = `a[href="${option.key}"]`
+      cy.checkRoutes(option.key, option.anchor, option.header)
     });
 
     it('Очередь', () => {
-      cy.get('a[href="/queue"]').click();
-      cy.url().should('include', '/queue');
-
-      cy.get('h3').contains('Очередь');
-      cy.get('button').not(':contains("К оглавлению")').should('exist');
+      const option = routesOption.queue;
+      option.anchor = `a[href="${option.key}"]`
+      cy.checkRoutes(option.key, option.anchor, option.header)
       cy.get('ul').should('exist').find('li').should('have.length', 7)
-      cy.get('input').should('exist');
     });
 
     it('Связный список', () => {
-      cy.get('a[href="/list"]').click();
-      cy.url().should('include', '/list');
-
-      cy.get('h3').contains('Связный список');
-      cy.get('button').not(':contains("К оглавлению")').should('exist');
+      const option = routesOption.list;
+      option.anchor = `a[href="${option.key}"]`
+      cy.checkRoutes(option.key, option.anchor, option.header)
       cy.get('ul').should('exist').find('li').should('have.length', 4)
-      cy.get('input').should('exist');
     });
   })
