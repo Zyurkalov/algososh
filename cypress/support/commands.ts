@@ -1,3 +1,6 @@
+import { pClassTextInsideСircle } from "../../src/constants/testConstants";
+import { LOCALHOST } from "../../src/constants/routing-url";
+
 /// <reference types="cypress" />
 // ***********************************************
 // This example commands.ts shows you how to
@@ -35,3 +38,35 @@
 //     }
 //   }
 // }
+Cypress.Commands.add("checkingEachList", (arrayStyle: string | string[], arrayText: string[], timer: number = 0) => {
+    if (Array.isArray(arrayStyle)) {
+      cy.wait(timer);
+      return cy.get("li").each(($li, index) => {
+        cy.wrap($li).find(arrayStyle[index]).should("exist");
+        cy.wrap($li)
+          .find(`${pClassTextInsideСircle}`)
+          .should("have.text", arrayText[index]);
+      });
+    } else {
+      cy.wait(timer);
+      return cy.get("li").each(($li, index) => {
+        cy.wrap($li).find(arrayStyle).should("exist");
+        cy.wrap($li)
+          .find(`${pClassTextInsideСircle}`)
+          .should("have.text", arrayText[index]);
+      });
+    }
+  }
+);
+Cypress.Commands.add("goToVisit", (key?: string) => {
+  if (key) {
+    cy.visit(`${LOCALHOST}/${key}`);
+  } else {
+    cy.visit(`${LOCALHOST}`);
+  }
+});
+
+Cypress.Commands.add("checkButton", (text: string) => {
+  cy.get("input").clear();
+  cy.contains("button", `${text}`).should("be.disabled");
+});

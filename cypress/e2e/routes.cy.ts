@@ -1,9 +1,8 @@
 /// <reference types="cypress" />
-import {LOCALHOST} from '../../src/constants/routing-url'
 
 describe('Тестирование переходов по страницам', () => {
   beforeEach(() => {
-        cy.visit(LOCALHOST);
+        cy.goToVisit();
       });
 
     it('Строка', () => {

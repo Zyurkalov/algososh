@@ -1,8 +1,9 @@
 /// <reference types="cypress" />
-import {LOCALHOST} from '../../src/constants/routing-url'
+import {headerMainPage} from '../../src/constants/testConstants' 
 
 describe('Тестирование работоспособности приложения', () => {
   it('приложение поднялось', () => {
-    cy.visit(LOCALHOST)
+    cy.goToVisit()
+    cy.get('h1').should('contain.text', headerMainPage)
   })
 })
