@@ -2,9 +2,11 @@
 
 declare namespace Cypress {
     interface Chainable {
-      goToVisit(key?: string ): void;
-      checkButton(text: string): void;
-      checkingEachList(arrayStyle: string | string[], arrayText: string[], timer?: number): void;
-      checkRoutes(key: string, anchor: string, headerValue: string): void;
+      goToVisit(key?: string ): Cypress.Chainable<Element>;
+      checkButtonState(text: string, boolean: boolean): Cypress.Chainable<Element>;
+      checkButtonStateAfterClearInput(text: string): Cypress.Chainable<Element>;
+      checkEachList(arrayStyle: string | string[], arrayText: string[], timer?: number): void;
+      checkLastElement(arrayStyle: string, arrayText: string[], timer?: number): void;
+      checkRoutes(key: string, headerValue: string): Cypress.Chainable<Element>;
     }
   }

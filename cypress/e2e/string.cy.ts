@@ -36,20 +36,20 @@ describe("Тестирование компонента String", () => {
   });
 
   it("если в инпуте пусто, то кнопка добавления недоступна", () => {
-    cy.checkButton("Развернуть")
+    cy.checkButtonStateAfterClearInput("Развернуть")
   });
 
   it("коректно добавляются значения", () => {
     cy.get("input").type("echo");
-    cy.contains("button", "Развернуть").should("not.be.disabled").click().should("be.disabled");
+    cy.checkButtonState("Развернуть", true).click().should("be.disabled");
     cy.get("input").should("be.disabled");
     cy.get("li").should("have.length", 4)
 
-    cy.checkingEachList(listDefault_style, firstIteration_text, 0) 
-    cy.checkingEachList(firstIteration_style, firstIteration_text, DELAY_IN_MS)
-    cy.checkingEachList(secondIteration_style, secondIteration_text, DELAY_IN_MS)
-    cy.checkingEachList(divClassModified, thirdIteration_text, DELAY_IN_MS)
+    cy.checkEachList(listDefault_style, firstIteration_text, 0) 
+    cy.checkEachList(firstIteration_style, firstIteration_text, DELAY_IN_MS)
+    cy.checkEachList(secondIteration_style, secondIteration_text, DELAY_IN_MS)
+    cy.checkEachList(divClassModified, thirdIteration_text, DELAY_IN_MS)
 
-    cy.contains('button', "Развернуть").should('not.be.disabled')
+    cy.checkButtonState("Развернуть", true)
   });
 });

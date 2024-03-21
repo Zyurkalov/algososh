@@ -1,5 +1,4 @@
 /// <reference types="cypress" />
-import { LOCALHOST } from "../../src/constants/routing-url";
 import { SHORT_DELAY_IN_MS } from "../../src/constants/delays";
 import {divClassDefault} from '../../src/constants/testConstants' 
 
@@ -11,20 +10,21 @@ describe("Тестирование компонента String", () => {
   });
 
   it("если в инпуте пусто, то кнопка добавления недоступна", () => {
-    cy.checkButton("Рассчитать")
+    cy.checkButtonStateAfterClearInput("Рассчитать")
   });
 
   it("проверяем что числа генерируются корректно", () => {
     cy.get("input").type(`${fibonacciNumbers.length - 1}`);
-    cy.contains("button", "Рассчитать").click().should("be.disabled");
+
+    cy.checkButtonState("Рассчитать", true).click().should("be.disabled");
     cy.get("input").should("be.disabled");
     
-    cy.wait(SHORT_DELAY_IN_MS * fibonacciNumbers.length - 1);
+    cy.wait(SHORT_DELAY_IN_MS * fibonacciNumbers.length);
     
-    cy.get("li")
-    .should("have.length", fibonacciNumbers.length)
-    cy.checkingEachList(divClassDefault, fibonacciNumbers) 
+    cy.get("li").should("have.length", fibonacciNumbers.length)
+    cy.checkEachList(divClassDefault, fibonacciNumbers) 
 
-    cy.contains('button', "Рассчитать").should('not.be.disabled')
+    cy.checkButtonState("Рассчитать", true)
+    cy.get('ul').should('exist').find('li').should('have.length', fibonacciNumbers.length)
   });
 });

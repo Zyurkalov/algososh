@@ -1,5 +1,5 @@
 import { pClassTextInsideСircle } from "../../src/constants/testConstants";
-import { LOCALHOST } from "../../src/constants/routing-url";
+import { LOCALHOST } from "../../src/constants/routing";
 
 /// <reference types="cypress" />
 // ***********************************************
@@ -38,7 +38,7 @@ import { LOCALHOST } from "../../src/constants/routing-url";
 //     }
 //   }
 // }
-Cypress.Commands.add("checkingEachList", (arrayStyle: string | string[], arrayText: string[], timer: number = 0) => {
+Cypress.Commands.add("checkEachList", (arrayStyle, arrayText, timer = 0) => {
     if (Array.isArray(arrayStyle)) {
       cy.wait(timer);
       return cy.get("li").each(($li, index) => {
@@ -58,7 +58,17 @@ Cypress.Commands.add("checkingEachList", (arrayStyle: string | string[], arrayTe
     }
   }
 );
-Cypress.Commands.add("checkRoutes", (key: string, anchor: string, header: string) => {
+Cypress.Commands.add("checkLastElement", (arrayStyle, arrayText, timer = 0) => {
+  cy.wait(timer);
+  return cy.get("li").each(($li, index) => {
+    cy.get('li').last().find(arrayStyle).should("exist");
+    cy.wrap($li)
+    .find(`${pClassTextInsideСircle}`)
+    .should("have.text", arrayText[index]);
+  });
+});
+Cypress.Commands.add("checkRoutes", (key, header) => {
+  const anchor = `a[href="${key}"]`
   cy.get(anchor).click();
   cy.url().should('include', key);
 
@@ -67,7 +77,7 @@ Cypress.Commands.add("checkRoutes", (key: string, anchor: string, header: string
   cy.get('input').should('exist');
 })
 
-Cypress.Commands.add("goToVisit", (key?: string) => {
+Cypress.Commands.add("goToVisit", (key?) => {
   if (key) {
     cy.visit(`${LOCALHOST}/${key}`);
   } else {
@@ -75,7 +85,15 @@ Cypress.Commands.add("goToVisit", (key?: string) => {
   }
 });
 
-Cypress.Commands.add("checkButton", (text: string) => {
-  cy.get("input").clear();
+Cypress.Commands.add("checkButtonState", (text, boolean = true) => {
+  if(boolean) {
+    cy.contains("button", `${text}`).should("not.be.disabled");
+  } else {
+    cy.contains("button", `${text}`).should('be.disabled');
+  }
+});
+
+Cypress.Commands.add('checkButtonStateAfterClearInput', (text) => {
+  cy.get('input').clear();
   cy.contains("button", `${text}`).should("be.disabled");
 });

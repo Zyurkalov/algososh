@@ -2,34 +2,60 @@ import {divClassDefault, divClassChanging, divClassModified} from '../../src/con
 import { DELAY_IN_MS } from "../../src/constants/delays";
 
 describe('Тестирование компонента Stack', () => {
-  const stackValue = ['1', '100', '0' ,'10' ,'11' ,'end']
+  const stackValue = ['1', '100', 'end']
+
     beforeEach(() => {
         cy.goToVisit('stack');
       });
     
-      it("если в инпуте пусто, то кнопка добавления недоступна", () => {
-        cy.checkButton("Добавить")
-      });
-      
-      it("добавили элемент в стек", () => {
-        const input = cy.get('input')
+    it("если в инпуте пусто, то кнопка добавления недоступна", () => {
+        cy.checkButtonStateAfterClearInput("Добавить")
+    });
 
-        input.type(stackValue[0])
+    it("добавили элементы в стек", () => {
+      stackValue.forEach((value) => {
+        const input = cy.get('input')
+        input.type(value)
         cy.contains("button", "Добавить").click().should('be.disabled')
         input.should('be.disabled')
 
-        cy.checkingEachList(divClassChanging, stackValue)
-        cy.checkingEachList(divClassDefault, stackValue, DELAY_IN_MS)
-      });
+        cy.checkLastElement(divClassChanging, stackValue)
+        cy.checkLastElement(divClassDefault, stackValue, DELAY_IN_MS)
+        input.should('not.be.disabled')
+      })
+    });
 
-      it("проверяем поведение кнопки «Очистить»", () => {
-        // const input = cy.get('input')
+    it("проверяем поведение кнопки «Удалить»", () => {
+      cy.checkButtonState("Удалить", false)
+      stackValue.forEach((value) => {
+        cy.get('input').type(value)
+        cy.contains("button", "Добавить").click()
+        cy.wait(DELAY_IN_MS)
+      })
+      const getLastElement = () => {
+        return cy.get('li').last()
+      };
 
-        // input.type(stackValue[0])
-        // cy.contains("button", "Добавить").click().should('be.disabled')
-        // input.should('be.disabled')
+      getLastElement().find(divClassDefault).should("exist");
+      getLastElement().find('div[class*=circle_head__]').should("have.text", 'top');
+      getLastElement().find('p[class*=circle_letter__]').should("have.text", stackValue[stackValue.length-1]);
+      
+      cy.checkButtonState("Удалить", true).click()
 
-        // cy.checkingEachList(divClassChanging, stackValue)
-        // cy.checkingEachList(divClassDefault, stackValue, DELAY_IN_MS)
-      });
+      getLastElement().find(divClassChanging).should("exist");
+      getLastElement().find('div[class*=circle_head__]').should("have.text", 'top');
+      getLastElement().find('p[class*=circle_letter__]').should("have.text", stackValue[stackValue.length-2]);
+    })
+
+    it("проверяем поведение кнопки «Очистить»", () => {
+      cy.checkButtonState("Очистить", false)
+
+      stackValue.forEach((value) => {
+        cy.get('input').type(value)
+        cy.contains("button", "Добавить").click()
+        cy.wait(DELAY_IN_MS)
+      })
+      cy.checkButtonState("Очистить", true).click()
+      cy.get('li').should('not.exist')
+    })
 })
