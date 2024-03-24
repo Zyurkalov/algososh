@@ -2,7 +2,7 @@
 import { SHORT_DELAY_IN_MS } from "../../src/constants/delays";
 import {divClassDefault} from '../../src/constants/testConstants' 
 
-describe("Тестирование компонента String", () => {
+describe("Тестирование компонента Fibonacchi", () => {
   const fibonacciNumbers = ['1', '1', '2', '3', '5', '8', '13'];
 
   beforeEach(() => {

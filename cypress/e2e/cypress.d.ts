@@ -1,4 +1,5 @@
 //без этого TypeScript ругается на типизацию кастомных модулей для Cypress
+/// <reference types="cypress" />
 
 declare namespace Cypress {
     interface Chainable {
@@ -8,5 +9,10 @@ declare namespace Cypress {
       checkEachList(arrayStyle: string | string[], arrayText: string[], timer?: number): void;
       checkLastElement(arrayStyle: string, arrayText: string[], timer?: number): void;
       checkRoutes(key: string, headerValue: string): Cypress.Chainable<Element>;
+      queueInteractElementAtIndex(index: number, arr: string[], style: {
+        divClassDefault: string;
+        divClassChanging: string;
+        divClassModified: string;
+    }): void;
     }
   }

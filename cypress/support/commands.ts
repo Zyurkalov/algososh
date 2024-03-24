@@ -1,6 +1,3 @@
-import { pClassTextInsideСircle } from "../../src/constants/testConstants";
-import { LOCALHOST } from "../../src/constants/routing";
-
 /// <reference types="cypress" />
 // ***********************************************
 // This example commands.ts shows you how to
@@ -38,6 +35,10 @@ import { LOCALHOST } from "../../src/constants/routing";
 //     }
 //   }
 // }
+
+import { pClassTextInsideСircle, divClassTextСircleHead, divClassTextСircleTail, pClassTextСircleLetter } from "../../src/constants/testConstants";
+import { LOCALHOST } from "../../src/constants/routing";
+
 Cypress.Commands.add("checkEachList", (arrayStyle, arrayText, timer = 0) => {
     if (Array.isArray(arrayStyle)) {
       cy.wait(timer);
@@ -97,3 +98,22 @@ Cypress.Commands.add('checkButtonStateAfterClearInput', (text) => {
   cy.get('input').clear();
   cy.contains("button", `${text}`).should("be.disabled");
 });
+
+Cypress.Commands.add("queueInteractElementAtIndex", (headIndex, queueValue, style) => {
+const {divClassDefault, divClassChanging} = style
+  cy.get("li").eq(headIndex).as('head')
+  cy.get('@head').find(divClassTextСircleHead).should("have.text", "head")
+    .parent()
+    .find(divClassDefault).should("exist")
+    .parent()
+    .find(pClassTextСircleLetter).should("have.text", queueValue[headIndex]);
+
+  if(headIndex < queueValue.length - 1) {
+    //проверяем следующий элемент в очереди, на отсуствие метки "head"
+    cy.get("li").eq(headIndex+1).find(divClassTextСircleHead).should("have.text", "");
+  }else{
+    cy.get("li").eq(queueValue.length -1).find(divClassTextСircleHead).should("have.text", "");
+  }
+  cy.contains("button", "Удалить").click()
+  cy.get("li").eq(headIndex).find(divClassChanging).should("exist");
+})

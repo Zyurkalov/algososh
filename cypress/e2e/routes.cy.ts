@@ -1,6 +1,6 @@
-import {setRoutesOption} from "../../src/constants/routing"
-
 /// <reference types="cypress" />
+
+import {setRoutesOption} from "../../src/constants/routing"
 describe('Тестирование переходов по страницам', () => {
 
   beforeEach(() => {

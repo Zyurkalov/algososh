@@ -1,8 +1,8 @@
+/// <reference types="cypress" />
+
 import {divClassDefault, divClassChanging, divClassModified} from '../../src/constants/testConstants' 
 import { DELAY_IN_MS, SHORT_DELAY_IN_MS } from "../../src/constants/delays";
-
-/// <reference types="cypress" />
-describe("Тестирование переходов по страницам", () => {
+describe("Тестирование компонента List", () => {
   
   beforeEach(() => {
     cy.goToVisit("list");

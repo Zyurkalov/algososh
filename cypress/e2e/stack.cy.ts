@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 import {divClassDefault, divClassChanging, divClassModified} from '../../src/constants/testConstants' 
 import { DELAY_IN_MS } from "../../src/constants/delays";
 
