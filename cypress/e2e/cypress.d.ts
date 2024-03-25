@@ -1,6 +1,6 @@
-//без этого TypeScript ругается на типизацию кастомных модулей для Cypress
 /// <reference types="cypress" />
 
+//без этого TypeScript ругается на типизацию кастомных модулей для Cypress
 declare namespace Cypress {
     interface Chainable {
       goToVisit(key?: string ): Cypress.Chainable<Element>;
@@ -13,6 +13,9 @@ declare namespace Cypress {
         divClassDefault: string;
         divClassChanging: string;
         divClassModified: string;
-    }): void;
+      }): void;
+      listVerifyElementAtIndex(array: string[], index: number, target?: 'head'|'tail'|'other'): void;
+      listInteractAddElementAtIndex(value: number| string, index:number, timer: number): void;
+      listRemoveElementAtIndex(value: string, typeIndex: number, timet: number): void;
     }
   }

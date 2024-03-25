@@ -1,10 +1,9 @@
-import { render, screen } from "@testing-library/react";
+
 import renderer from "react-test-renderer";
 import { Circle } from "./circle";
 import { ElementStates } from "../../../types/element-states";
 // getByTestId используем когда елемент гарантировано должен быть, иначе вернет Error().
 // queryByTestId если объект может быть null.
-// может спользовать toBeTruthy()?
 
 describe("Circle ui-component", () => {
   it("рендерится без содержимого", () => {
