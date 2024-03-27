@@ -74,14 +74,16 @@ import { ElementStates } from "../types/element-states";
 
   export const getSelectionSort = async (
     sortingArr: TColumnArray[], typeSort: TTypeSort, 
-    setRandomArray:Dispatch<SetStateAction<TColumnArray[]>>, start = 0): Promise<void> => {
+    setRandomArray:Dispatch<SetStateAction<TColumnArray[]>>, start = 0): Promise<TColumnArray[]> => {
 
     const arr = [...sortingArr];
     const metod = typeSort;
-  
+    if ( arr.length === 0) {
+      return arr
+    }
     if (start === arr.length - 1) {
-      // return arr;
-      return;
+      arr[start].state = ElementStates.Modified
+      return arr;
     }
     const comparedValueIndex = await getIndex(arr, start+1, start, metod, setRandomArray);
    [arr[start], arr[comparedValueIndex]] = [arr[comparedValueIndex], arr[start]];
