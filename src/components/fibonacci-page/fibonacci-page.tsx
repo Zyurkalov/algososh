@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useState, useEffect} from "react";
+import React, { useState } from "react";
 import { getFibonacci } from "../../utility/get-fibonacci";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { DELAY_IN_MS } from "../../constants/delays";

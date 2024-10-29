@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { ElementStates } from "../../types/element-states";
 import { Node, SinglyLinkedList } from "../../utility/list-page/class-singly-linked-list";
@@ -29,7 +29,7 @@ export const ListPage: React.FC = () => {
     ],
     []
   );
-  const nodeList = useMemo(() => new SinglyLinkedList<TElem>(nodes), []);
+  const nodeList = useMemo(() => new SinglyLinkedList<TElem>(nodes), [nodes]);
 
   const [loader, setLoader] = useState(false);
   const [addingToHead, setAddingToHead] = useState(false);

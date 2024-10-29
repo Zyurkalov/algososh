@@ -1,11 +1,11 @@
-type TStack<T> = {
-    push: (item: T) => void;
-    pop: () => void;
-    peak: () => T | null;
-    remove: () => null
-    getSize: () => number;
-    getContainer: () => T | null
-  };
+// type TStack<T> = {
+//     push: (item: T) => void;
+//     pop: () => void;
+//     peak: () => T | null;
+//     remove: () => null
+//     getSize: () => number;
+//     getContainer: () => T | null
+//   };
   
   export class Stack<T> {
     private container: T[] = [];

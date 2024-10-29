@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";

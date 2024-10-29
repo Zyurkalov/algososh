@@ -1,5 +1,3 @@
-import { isThisTypeNode } from "typescript";
-
 export class Node<T> {
   data: T;
   next: Node<T> | null;
