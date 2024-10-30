@@ -15,7 +15,7 @@
   - склонировать репозитории `git clone git@github.com:Zyurkalov/algososh.git`
   - установить зависимости `npm i`
   - запустить проект `npm run start`
-  - откройте http://localhost:3000 для просмотра в браузере.
+  - откройте http://localhost:3000/algososh/ для просмотра в браузере.
 
 ### Используемые инструменты:
 - HTML / CSS / TypeScript
